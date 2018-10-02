@@ -13,6 +13,7 @@ private:
 	int d; //destruction size
 	double alpha; //for construction heuristic
 	Problem *problem;
+	bool printInfo;
 
 	void applyConstruction1(Solution *SPrime, int d) const;
 	void applyDestruction1(Solution *SPrime, int d) const;

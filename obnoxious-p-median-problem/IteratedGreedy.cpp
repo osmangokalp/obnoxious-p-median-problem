@@ -9,6 +9,7 @@ IteratedGreedy::IteratedGreedy(Problem * problem, int d, double alpha)
 	this->problem = problem;
 	this->d = d;
 	this->alpha = alpha;
+	this->printInfo = false;
 }
 
 IteratedGreedy::~IteratedGreedy()
@@ -49,7 +50,7 @@ Solution * IteratedGreedy::solve(int MAX_ITER) const
 			delete SPrime;
 		}
 		
-		if (i % 100 == 0) {
+		if (printInfo && i % 100 == 0) {
 			std::cout << "ITER: " << i << "\t" << S->getObjValue() << "\n";
 		}
 
