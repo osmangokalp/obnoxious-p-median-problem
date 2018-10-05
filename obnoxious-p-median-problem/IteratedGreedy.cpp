@@ -10,28 +10,40 @@ IteratedGreedy::IteratedGreedy(Problem * problem, int d, double alpha)
 	this->d = d;
 	this->alpha = alpha;
 	this->printInfo = false;
+	this->S = NULL;
+	this->SStar = NULL;
 }
 
 IteratedGreedy::~IteratedGreedy()
 {
+	delete SStar;
+	delete S;
 }
 
-Solution * IteratedGreedy::solve(int MAX_ITER) const
+Solution * IteratedGreedy::solve(int MAX_ITER)
 {
-	Solution *S = constructSolution();
+	S = constructSolution();
 	LS1::search(S);
-	Solution *SStar = S->cloneSolution();
+	SStar = S->cloneSolution();
 	Solution *SPrime;
+
+	//stats
+	int numOfSuccessiveUnimproved = 0;
+	int maxNumOfSuccessiveUnimproved = 0;
+	int numOfCallsToApplyDestruction1 = 0;
+	int numOfCallsToApplyDestruction2 = 0;
 
 	for (size_t i = 0; i < MAX_ITER; i++)
 	{
 		SPrime = S->cloneSolution();
 
-		if (i % 20 == 0) {
+		if (numOfSuccessiveUnimproved == 0) {
 			applyDestruction2(SPrime, d);
+			numOfCallsToApplyDestruction2++;
 		}
 		else {
 			applyDestruction1(SPrime, d);
+			numOfCallsToApplyDestruction1++;
 		}
 		applyConstruction1(SPrime, d);
 
@@ -45,18 +57,33 @@ Solution * IteratedGreedy::solve(int MAX_ITER) const
 				delete SStar;
 				SStar = S->cloneSolution();
 			}
+
+			///*if (printInfo) {
+			//	std::cout << "\t\tITER: " << i << "\t" << S->getObjValue() << "\n";
+			//}*/
+			numOfSuccessiveUnimproved = 0;
 		}
 		else {
+			numOfSuccessiveUnimproved++;
+			if (numOfSuccessiveUnimproved > maxNumOfSuccessiveUnimproved) {
+				maxNumOfSuccessiveUnimproved = numOfSuccessiveUnimproved;
+			}
 			delete SPrime;
 		}
-		
-		if (printInfo && i % 100 == 0) {
-			std::cout << "ITER: " << i << "\t" << S->getObjValue() << "\n";
-		}
+	}
 
+	if (printInfo) {
+		std::cout << "\t\tmaxNumOfSuccessiveUnimproved: " << maxNumOfSuccessiveUnimproved << "\n";
+		std::cout << "\t\tnumOfCallsToApplyDestruction1: " << numOfCallsToApplyDestruction1 << "\n";
+		std::cout << "\t\tnumOfCallsToApplyDestruction2: " << numOfCallsToApplyDestruction2 << "\n";
 	}
 
 	return SStar;
+}
+
+void IteratedGreedy::setPrintInfo(bool b)
+{
+	this->printInfo = b;
 }
 
 void IteratedGreedy::applyConstruction1(Solution * SPrime, int d) const
@@ -71,9 +98,10 @@ void IteratedGreedy::applyConstruction1(Solution * SPrime, int d) const
 	}
 }
 
+//remove randomly selected d open facilities
 void IteratedGreedy::applyDestruction1(Solution * SPrime, int d) const
 {
-	int *out = selectFacilitiesForDestruction1(SPrime, d);
+	int *out = selectRandomFromOpenFacilities(SPrime, d);
 	double diff;
 
 	//destruction
@@ -85,6 +113,7 @@ void IteratedGreedy::applyDestruction1(Solution * SPrime, int d) const
 	delete out;
 }
 
+//remove the most frequent facility d times
 void IteratedGreedy::applyDestruction2(Solution * SPrime, int d) const
 {
 	int selected;
@@ -98,7 +127,7 @@ void IteratedGreedy::applyDestruction2(Solution * SPrime, int d) const
 	}
 }
 
-int * IteratedGreedy::selectFacilitiesForDestruction1(Solution * sol, int d) const
+int * IteratedGreedy::selectRandomFromOpenFacilities(Solution * sol, int d) const
 {
 	int *toBeClosed = new int[d];
 	int *openFacilities = sol->getCopyOfOpenFacilities();

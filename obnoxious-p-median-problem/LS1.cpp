@@ -47,7 +47,8 @@ double LS1::search(Solution * S)
 			}
 			index1++;
 		}
-		delete openFacilities, closedFacilities;
+		delete openFacilities;
+		delete closedFacilities;
 	}
 
 	return totalDiff;

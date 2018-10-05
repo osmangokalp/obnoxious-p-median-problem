@@ -68,5 +68,8 @@
     <ClCompile Include="IteratedGreedy.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
+    <ClCompile Include="Experiment1.cpp">
+      <Filter>Kaynak Dosyalar</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

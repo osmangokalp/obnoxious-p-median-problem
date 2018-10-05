@@ -49,7 +49,8 @@ void GC2::selectCandidate(Solution *sol, double alpha, int & selected, double & 
 		}
 	}
 
-	delete CL, RCL;
+	delete CL;
+	delete RCL;
 
 	selected = sel;
 	diff = maxDiff;
