@@ -162,6 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Experiment1.cpp" />
+    <ClCompile Include="Experiment2.cpp" />
     <ClCompile Include="GC2.cpp" />
     <ClCompile Include="IteratedGreedy.cpp" />
     <ClCompile Include="LS1.cpp" />
