@@ -88,6 +88,7 @@ ProblemInstanceReader::ProblemInstanceReader(string fileName)
 		}
 	}
 
+	delete[] chArr;
 	//create Problem object
 	problem = new Problem(n, m, p, DM);
 
