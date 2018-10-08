@@ -110,7 +110,7 @@ void IteratedGreedy::applyDestruction1(Solution * SPrime, int d) const
 		SPrime->closeFacility(out[j], diff);
 	}
 
-	delete out;
+	delete[] out;
 }
 
 //remove the most frequent facility d times
@@ -150,7 +150,7 @@ int * IteratedGreedy::selectRandomFromOpenFacilities(Solution * sol, int d) cons
 		}
 	}
 
-	delete openFacilities;
+	delete[] openFacilities;
 
 	return toBeClosed;
 }

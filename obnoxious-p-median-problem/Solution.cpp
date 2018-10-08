@@ -62,11 +62,11 @@ Solution::~Solution()
 {
 	for (size_t i = 0; i < n; i++)
 	{
-		delete openFacilitiesPerClient[i];
+		delete[] openFacilitiesPerClient[i];
 	}
-	delete openFacilitiesPerClient;
+	delete[] openFacilitiesPerClient;
 
-	delete closedFacilitiesList;
+	delete[] closedFacilitiesList;
 }
 
 double Solution::evaluateFacilityOpening(int facilityToBeOpened) const
@@ -220,7 +220,7 @@ int Solution::selectMostFrequentAtFirst() const
 
 	}
 
-	delete frequency;
+	delete[] frequency;
 
 	return selected;
 }
