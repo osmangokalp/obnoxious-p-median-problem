@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GC2.h"
 #include "Util.h"
+#include "Problem.h"
 #include <iostream>
 
 GC2::GC2()
@@ -55,3 +56,21 @@ void GC2::selectCandidate(Solution *sol, double alpha, int & selected, double & 
 	selected = sel;
 	diff = maxDiff;
 }
+
+Solution * GC2::constructSolution(Problem * problem, double alpha)
+{
+	Solution *sol = new Solution(problem);
+
+	//open first facility randomly
+	int selected = (rand() % problem->getM());
+	double diff = sol->evaluateFacilityOpening(selected);
+	sol->openFacility(selected, diff);
+
+	while (sol->getOpenFacilityCount() != problem->getP()) {
+		GC2::selectCandidate(sol, alpha, selected, diff);
+		sol->openFacility(selected, diff);
+	}
+
+	return sol;
+}
+

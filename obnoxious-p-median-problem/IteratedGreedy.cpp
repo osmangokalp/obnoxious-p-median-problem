@@ -21,10 +21,9 @@ IteratedGreedy::~IteratedGreedy()
 	delete S;
 }
 
-Solution * IteratedGreedy::solve(int MAX_ITER)
+Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER)
 {
-	S = constructSolution();
-	LS1::search(S);
+	S = sol->cloneSolution();
 	SStar = S->cloneSolution();
 	Solution *SPrime;
 
@@ -33,9 +32,10 @@ Solution * IteratedGreedy::solve(int MAX_ITER)
 	int maxNumOfSuccessiveUnimproved = 0;
 	int numOfCallsToApplyDestruction1 = 0;
 	int numOfCallsToApplyDestruction2 = 0;
+	int lastImprovedIter = 0;
 
 	for (size_t i = 0; i < MAX_ITER; i++)
-	{
+	{		
 		SPrime = S->cloneSolution();
 
 		if (numOfSuccessiveUnimproved == 0) {
@@ -54,14 +54,12 @@ Solution * IteratedGreedy::solve(int MAX_ITER)
 		if (SPrime->getObjValue() > S->getObjValue()) {
 			delete S;
 			S = SPrime;
+			lastImprovedIter = i;
 			if (S->getObjValue() > SStar->getObjValue()) {
 				delete SStar;
 				SStar = S->cloneSolution();
 			}
 
-			///*if (printInfo) {
-			//	std::cout << "\t\tITER: " << i << "\t" << S->getObjValue() << "\n";
-			//}*/
 			numOfSuccessiveUnimproved = 0;
 		}
 		else {
@@ -74,6 +72,7 @@ Solution * IteratedGreedy::solve(int MAX_ITER)
 	}
 
 	if (printInfo) {
+		std::cout << "\t\tlastImprovedIter: " << lastImprovedIter << "\n";
 		std::cout << "\t\tmaxNumOfSuccessiveUnimproved: " << maxNumOfSuccessiveUnimproved << "\n";
 		std::cout << "\t\tnumOfCallsToApplyDestruction1: " << numOfCallsToApplyDestruction1 << "\n";
 		std::cout << "\t\tnumOfCallsToApplyDestruction2: " << numOfCallsToApplyDestruction2 << "\n";
@@ -151,21 +150,4 @@ int * IteratedGreedy::selectRandomFromOpenFacilities(Solution * sol, int d) cons
 	delete[] openFacilities;
 
 	return toBeClosed;
-}
-
-Solution * IteratedGreedy::constructSolution() const
-{
-	Solution *sol = new Solution(problem);
-
-	//open first facility randomly
-	int selected = (rand() % problem->getM());
-	double diff = sol->evaluateFacilityOpening(selected);
-	sol->openFacility(selected, diff);
-
-	while (sol->getOpenFacilityCount() != problem->getP()) {
-		GC2::selectCandidate(sol, alpha, selected, diff);
-		sol->openFacility(selected, diff);
-	}
-
-	return sol;
 }

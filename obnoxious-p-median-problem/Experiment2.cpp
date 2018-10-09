@@ -7,7 +7,9 @@
 #include "Problem.h"
 #include "ProblemInstanceReader.h"
 #include "Solution.h"
+#include "GC2.h"
 #include "IteratedGreedy.h"
+#include "LS1.h"
 #include <chrono>
 #include <iostream>
 #include <fstream>
@@ -29,7 +31,7 @@ int main()
 	string EXPERIMENTS_FOLDER_LOC = "C:\\Users\\osman\\OneDrive\\Belgeler\\Okul\\Academic Works\\Continuing\\obnoxious p-median\\Experiments";
 
 	//Experiment Parameters
-	int SEED = 1919;
+	int SEED;
 	const int NUM_TRY = 1;
 	int MAX_ITER = 1000;
 	bool printInfo = true;
@@ -63,7 +65,7 @@ int main()
 	inFile.close();
 
 	//File output
-	string OUTPUT_FILE_NAME = "Exp2New_" + to_string(MAX_ITER) + string("iter.txt");
+	string OUTPUT_FILE_NAME = "Exp2Deneme_" + to_string(MAX_ITER) + string("iter.txt");
 
 	Problem *p;
 	Solution * S;
@@ -79,6 +81,7 @@ int main()
 
 		double alpha = 0.35;
 		int d = 45;
+		SEED = 2018;
 
 		for (size_t j = 0; j < NUM_TRY; j++)
 		{
@@ -91,22 +94,26 @@ int main()
 			ig->setPrintInfo(printInfo);
 
 			auto start = std::chrono::high_resolution_clock::now();
-			S = ig->solve(MAX_ITER);
+
+			S = GC2::constructSolution(p, alpha);
+			LS1::search(S);
+			Solution * S_Optimized = ig->solve(S, MAX_ITER);
+
 			auto finish = std::chrono::high_resolution_clock::now();
 
 			std::chrono::duration<double> elapsed = finish - start;
-			double f = S->getObjValue();
+			double f = S_Optimized->getObjValue();
 			double t = elapsed.count();
 
 			string line = string(instanceSet[i]) + string(" ") + to_string(j) + string(" ") + to_string(alpha) + string(" ") + to_string(d) + string(" ") + to_string(f) + string(" ") + to_string(t);
 
 			if (printInfo) {
-				std::cout << "\t\tObj: " << to_string(S->getObjValue()) << "\n";
+				std::cout << "\t\tObj: " << to_string(S_Optimized->getObjValue()) << "\n";
 			}
 
 			saveToAFile(EXPERIMENTS_FOLDER_LOC, OUTPUT_FILE_NAME, line);
 
-			S = NULL;
+			delete S;
 			delete ig;
 		}
 
