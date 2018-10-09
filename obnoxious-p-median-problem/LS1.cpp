@@ -20,7 +20,8 @@ double LS1::search(Solution * S)
 	bool improve = true;
 	while (improve) {
 		improve = false;
-		int *openFacilities = S->getCopyOfOpenFacilities();
+		int *openFacilities = new int[openFacilitiesCount];
+		Util::arrayCopy(S->getOpenFacilitiesList(), openFacilities, openFacilitiesCount);
 		int *closedFacilities = new int[closedFacilitiesCount];
 		Util::arrayCopy(S->getClosedFacilitiesList(), closedFacilities, closedFacilitiesCount);
 		Util::shuffle(openFacilities, openFacilitiesCount);

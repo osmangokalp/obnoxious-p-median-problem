@@ -2,6 +2,7 @@
 #include "IteratedGreedy.h"
 #include "LS1.h"
 #include "GC2.h"
+#include "Util.h"
 #include <iostream>
 
 IteratedGreedy::IteratedGreedy(Problem * problem, int d, double alpha)
@@ -130,8 +131,9 @@ void IteratedGreedy::applyDestruction2(Solution * SPrime, int d) const
 int * IteratedGreedy::selectRandomFromOpenFacilities(Solution * sol, int d) const
 {
 	int *toBeClosed = new int[d];
-	int *openFacilities = sol->getCopyOfOpenFacilities();
 	int openFacilitiesCount = sol->getOpenFacilityCount();
+	int *openFacilities = new int[openFacilitiesCount];
+	Util::arrayCopy(S->getOpenFacilitiesList(), openFacilities, openFacilitiesCount);
 
 	int remainingCount = openFacilitiesCount;
 	for (int i = 0; i < d; i++) {

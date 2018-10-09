@@ -5,7 +5,7 @@ class Solution
 {
 public:
 	Solution(Problem *problem);
-	Solution(Problem *problem, int **openFacilitiesPerClient, int *closedFacilitiesList,
+	Solution(Problem *problem, int **openFacilitiesPerClient, int * openFacilitiesList, int *closedFacilitiesList,
 		int openFacilityCount, int closedFacilityCount, double objValue);
 	~Solution();
 	double evaluateFacilityOpening(int facilityToBeOpened) const;
@@ -19,10 +19,10 @@ public:
 	int getClosedFacilityCount() const;
 	int * getClosedFacilitiesList() const;
 	double getObjValue() const;
-	int * getCopyOfOpenFacilities();
+	int * getOpenFacilitiesList();
 
 private:	
-	int binarySearchForIntArray(int *arr, int key) const;
+	int binarySearchForIntArray(int *arr, int len, int key) const;
 	int binarySearchForClientDistances(int i, int length, int facilityToBeOpened) const;
 	void insert(int i, int index, int facilityToBeOpened);
 	void remove(int i, int index);
@@ -38,6 +38,7 @@ private:
 	//Variables for the algorithm
 	int **openFacilitiesPerClient;
 	int *closedFacilitiesList;
+	int *openFacilitiesList;
 	int openFacilityCount, closedFacilityCount;
 };
 

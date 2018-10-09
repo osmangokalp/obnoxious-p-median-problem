@@ -24,12 +24,15 @@ Solution::Solution(Problem *problem)
 		closedFacilitiesList[i] = i;
 	}
 
+	//init open facilities list
+	openFacilitiesList = new int[m];
+
 	openFacilityCount = 0;
 	closedFacilityCount = m;
 	objValue = 0;
 }
 
-Solution::Solution(Problem * problem, int ** openFacilitiesPerClient, int * closedFacilitiesList, int openFacilityCount, int closedFacilityCount, double objValue)
+Solution::Solution(Problem * problem, int ** openFacilitiesPerClient, int * openFacilitiesList, int * closedFacilitiesList, int openFacilityCount, int closedFacilityCount, double objValue)
 {
 	this->problem = problem;
 	this->DM = problem->getDM();
@@ -43,15 +46,18 @@ Solution::Solution(Problem * problem, int ** openFacilitiesPerClient, int * clos
 		this->openFacilitiesPerClient[i] = new int[p];
 	}
 
-	this->closedFacilitiesList = new int[m];
-
 	//init open facilities per client
 	for (int i = 0; i < n; i++) {
 		Util::arrayCopy(openFacilitiesPerClient[i], this->openFacilitiesPerClient[i], openFacilityCount);
 	}
 
+	this->closedFacilitiesList = new int[m];
 	//init closed facilities list as to include all facilities in an ascending order
 	Util::arrayCopy(closedFacilitiesList, this->closedFacilitiesList, closedFacilityCount);
+
+	this->openFacilitiesList = new int[m];
+	//init open facilities list as to include all facilities in an ascending order
+	Util::arrayCopy(openFacilitiesList, this->openFacilitiesList, openFacilityCount);
 
 	this->openFacilityCount = openFacilityCount;
 	this->closedFacilityCount = closedFacilityCount;
@@ -67,6 +73,7 @@ Solution::~Solution()
 	delete[] openFacilitiesPerClient;
 
 	delete[] closedFacilitiesList;
+	delete[] openFacilitiesList;
 }
 
 double Solution::evaluateFacilityOpening(int facilityToBeOpened) const
@@ -105,10 +112,17 @@ void Solution::openFacility(int facilityToBeOpened, double diff)
 	}
 
 	//find and exclude facilityToBeOpened from the closed facility list
-	index = binarySearchForIntArray(closedFacilitiesList, facilityToBeOpened);
+	index = binarySearchForIntArray(closedFacilitiesList, closedFacilityCount, facilityToBeOpened);
 	for (int i = index; i < closedFacilityCount - 1; i++) {
 		closedFacilitiesList[i] = closedFacilitiesList[i + 1];
 	}
+
+	//insert facility into an appropriate position for the openFacilitiesList
+	index = binarySearchForIntArray(openFacilitiesList, openFacilityCount, facilityToBeOpened);
+	for (int i = openFacilityCount; i > index; i--) {
+		openFacilitiesList[i] = openFacilitiesList[i - 1];
+	}
+	openFacilitiesList[index] = facilityToBeOpened;
 
 	openFacilityCount++;
 	closedFacilityCount--;
@@ -194,11 +208,17 @@ void Solution::closeFacility(int facilityToBeClosed, double diff)
 	}
 
 	//insert facility into an appropriate position for the closedFacilitiesList
-	index = binarySearchForIntArray(closedFacilitiesList, facilityToBeClosed);
+	index = binarySearchForIntArray(closedFacilitiesList, closedFacilityCount, facilityToBeClosed);
 	for (int i = closedFacilityCount; i > index; i--) {
 		closedFacilitiesList[i] = closedFacilitiesList[i - 1];
 	}
 	closedFacilitiesList[index] = facilityToBeClosed;
+
+	//find and exclude facilityToBeOpened from the open facility list
+	index = binarySearchForIntArray(openFacilitiesList, openFacilityCount, facilityToBeClosed);
+	for (int i = index; i < openFacilityCount - 1; i++) {
+		openFacilitiesList[i] = openFacilitiesList[i + 1];
+	}
 
 	openFacilityCount--;
 	closedFacilityCount++;
@@ -225,9 +245,9 @@ int Solution::selectMostFrequentAtFirst() const
 	return selected;
 }
 
-int Solution::binarySearchForIntArray(int *arr, int key) const {
+int Solution::binarySearchForIntArray(int *arr, int len, int key) const {
 	int low = 0;
-	int high = closedFacilityCount - 1;
+	int high = len - 1;
 
 	while (low <= high) {
 		int mid = (low + high) / 2;
@@ -270,7 +290,7 @@ int Solution::binarySearchForClientDistances(int i, int length, int facilityToBe
 
 Solution * Solution::cloneSolution() const
 {
-	return new Solution(problem, openFacilitiesPerClient, closedFacilitiesList,
+	return new Solution(problem, openFacilitiesPerClient, openFacilitiesList, closedFacilitiesList,
 		openFacilityCount, closedFacilityCount, objValue);
 }
 
@@ -294,11 +314,9 @@ double Solution::getObjValue() const
 	return objValue;
 }
 
-int * Solution::getCopyOfOpenFacilities()
+int * Solution::getOpenFacilitiesList()
 {
-	int *arr = new int[openFacilityCount];
-	Util::arrayCopy(openFacilitiesPerClient[0], arr, openFacilityCount);
-	return arr;
+	return openFacilitiesList;
 }
 
 void Solution::insert(int i, int index, int facilityToBeOpened)
