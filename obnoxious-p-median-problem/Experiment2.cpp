@@ -63,7 +63,7 @@ int main()
 	inFile.close();
 
 	//File output
-	string OUTPUT_FILE_NAME = "Exp2_" + to_string(MAX_ITER) + string("iter.txt");
+	string OUTPUT_FILE_NAME = "Exp2New_" + to_string(MAX_ITER) + string("iter.txt");
 
 	Problem *p;
 	Solution * S;

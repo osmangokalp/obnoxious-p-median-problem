@@ -133,21 +133,17 @@ int * IteratedGreedy::selectRandomFromOpenFacilities(Solution * sol, int d) cons
 	int *openFacilities = sol->getCopyOfOpenFacilities();
 	int openFacilitiesCount = sol->getOpenFacilityCount();
 
-	int counter = 0;
+	int remainingCount = openFacilitiesCount;
+	for (int i = 0; i < d; i++) {
+		int randomIndex = (rand() % remainingCount);
+		toBeClosed[i] = openFacilities[randomIndex];
 
-	while (counter < d) {
-		int randIndex =(rand() % openFacilitiesCount);
-		int candidate = openFacilities[randIndex];
-		bool reSelect = false;
-		for (int i = 0; i < counter; i++) {
-			if (toBeClosed[i] == candidate) {
-				reSelect = true;
-				break;
-			}
+		//shift array
+		for (int j = randomIndex; j < remainingCount - 1; j++) {
+			openFacilities[j] = openFacilities[j + 1];
 		}
-		if (!reSelect) {
-			toBeClosed[counter++] = candidate;
-		}
+
+		remainingCount--;
 	}
 
 	delete[] openFacilities;
