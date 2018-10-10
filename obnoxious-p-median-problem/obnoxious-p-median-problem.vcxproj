@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="GC2.h" />
+    <ClInclude Include="IGxSA.h" />
     <ClInclude Include="IteratedGreedy.h" />
     <ClInclude Include="LS1.h" />
     <ClInclude Include="pch.h" />
@@ -164,6 +165,7 @@
     <ClCompile Include="Experiment1.cpp" />
     <ClCompile Include="Experiment2.cpp" />
     <ClCompile Include="GC2.cpp" />
+    <ClCompile Include="IGxSA.cpp" />
     <ClCompile Include="IteratedGreedy.cpp" />
     <ClCompile Include="LS1.cpp" />
     <ClCompile Include="obnoxious-p-median-problem.cpp" />

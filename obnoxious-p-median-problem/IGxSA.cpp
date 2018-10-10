@@ -1,11 +1,11 @@
 #include "pch.h"
-#include "IteratedGreedy.h"
+#include "IGxSA.h"
 #include "LS1.h"
 #include "GC2.h"
 #include "Util.h"
 #include <iostream>
 
-IteratedGreedy::IteratedGreedy(Problem * problem, int d, double alpha)
+IGxSA::IGxSA(Problem * problem, int d, double alpha)
 {
 	this->problem = problem;
 	this->d = d;
@@ -15,17 +15,19 @@ IteratedGreedy::IteratedGreedy(Problem * problem, int d, double alpha)
 	this->SStar = NULL;
 }
 
-IteratedGreedy::~IteratedGreedy()
+IGxSA::~IGxSA()
 {
 	delete SStar;
 	delete S;
 }
 
-Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER)
+Solution * IGxSA::solve(Solution * sol, int MAX_ITER)
 {
 	S = sol->cloneSolution();
 	SStar = S->cloneSolution();
 	Solution *SPrime;
+	double thresh = SStar ->getObjValue() / 5;
+	double threshFactor = 0.95;
 
 	//stats
 	int numOfSuccessiveUnimproved = 0;
@@ -35,7 +37,7 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER)
 	int lastImprovedIter = 0;
 
 	for (size_t i = 0; i < MAX_ITER; i++)
-	{		
+	{
 		SPrime = S->cloneSolution();
 
 		if (numOfSuccessiveUnimproved == 0) {
@@ -51,13 +53,14 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER)
 		//LS1::search(SPrime);
 
 		//acceptance
-		if (SPrime->getObjValue() > S->getObjValue()) {
+		if (SPrime->getObjValue() + thresh > S->getObjValue()) {
 			delete S;
 			S = SPrime;
-			lastImprovedIter = i;
+			
 			if (S->getObjValue() > SStar->getObjValue()) {
 				delete SStar;
 				SStar = S->cloneSolution();
+				lastImprovedIter = i;
 			}
 
 			numOfSuccessiveUnimproved = 0;
@@ -69,6 +72,7 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER)
 			}
 			delete SPrime;
 		}
+		thresh *= threshFactor;
 	}
 
 	if (printInfo) {
@@ -81,12 +85,12 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER)
 	return SStar;
 }
 
-void IteratedGreedy::setPrintInfo(bool b)
+void IGxSA::setPrintInfo(bool b)
 {
 	this->printInfo = b;
 }
 
-void IteratedGreedy::applyConstruction1(Solution * SPrime, int d) const
+void IGxSA::applyConstruction1(Solution * SPrime, int d) const
 {
 	int selected;
 	double diff;
@@ -99,7 +103,7 @@ void IteratedGreedy::applyConstruction1(Solution * SPrime, int d) const
 }
 
 //remove randomly selected d open facilities
-void IteratedGreedy::applyDestruction1(Solution * SPrime, int d) const
+void IGxSA::applyDestruction1(Solution * SPrime, int d) const
 {
 	int *out = selectRandomFromOpenFacilities(SPrime, d);
 	double diff;
@@ -114,7 +118,7 @@ void IteratedGreedy::applyDestruction1(Solution * SPrime, int d) const
 }
 
 //remove the most frequent facility d times
-void IteratedGreedy::applyDestruction2(Solution * SPrime, int d) const
+void IGxSA::applyDestruction2(Solution * SPrime, int d) const
 {
 	int selected;
 	double diff;
@@ -127,7 +131,7 @@ void IteratedGreedy::applyDestruction2(Solution * SPrime, int d) const
 	}
 }
 
-int * IteratedGreedy::selectRandomFromOpenFacilities(Solution * sol, int d) const
+int * IGxSA::selectRandomFromOpenFacilities(Solution * sol, int d) const
 {
 	int *toBeClosed = new int[d];
 	int openFacilitiesCount = sol->getOpenFacilityCount();

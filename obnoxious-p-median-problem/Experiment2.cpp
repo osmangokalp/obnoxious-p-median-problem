@@ -9,6 +9,7 @@
 #include "Solution.h"
 #include "GC2.h"
 #include "IteratedGreedy.h"
+#include "IGxSA.h"
 #include "LS1.h"
 #include <chrono>
 #include <iostream>
@@ -65,10 +66,14 @@ int main()
 	inFile.close();
 
 	//File output
-	string OUTPUT_FILE_NAME = "Exp2Deneme_" + to_string(MAX_ITER) + string("iter.txt");
+	string OUTPUT_FILE_NAME = "Exp2Deneme3_" + to_string(MAX_ITER) + string("iter.txt");
 
 	Problem *p;
 	Solution * S;
+
+	//ALgorithm parameters
+	double alpha = 0.35;
+	double dFactor = 0.3;
 
 	for (size_t i = 0; i < instanceSize; i++)
 	{
@@ -79,8 +84,7 @@ int main()
 		ProblemInstanceReader * pir = new ProblemInstanceReader(instanceSet[i]);
 		p = pir->GetProblem();
 
-		double alpha = 0.35;
-		int d = 45;
+		int d = floor(dFactor * p->getP());
 		SEED = 2018;
 
 		for (size_t j = 0; j < NUM_TRY; j++)
@@ -90,13 +94,13 @@ int main()
 			}
 
 			srand(SEED++);
-			IteratedGreedy * ig = new IteratedGreedy(p, d, alpha);
+			IGxSA * ig = new IGxSA(p, d, alpha);
 			ig->setPrintInfo(printInfo);
 
 			auto start = std::chrono::high_resolution_clock::now();
 
 			S = GC2::constructSolution(p, alpha);
-			LS1::search(S);
+			//LS1::search(S);
 			Solution * S_Optimized = ig->solve(S, MAX_ITER);
 
 			auto finish = std::chrono::high_resolution_clock::now();
@@ -105,7 +109,7 @@ int main()
 			double f = S_Optimized->getObjValue();
 			double t = elapsed.count();
 
-			string line = string(instanceSet[i]) + string(" ") + to_string(j) + string(" ") + to_string(alpha) + string(" ") + to_string(d) + string(" ") + to_string(f) + string(" ") + to_string(t);
+			string line = string(instanceSet[i]) + string(" ") + string(" ") + to_string(BKS[i]) + to_string(j) + string(" ") + to_string(alpha) + string(" ") + to_string(dFactor) + string(" ") + to_string(f) + string(" ") + to_string(t);
 
 			if (printInfo) {
 				std::cout << "\t\tObj: " << to_string(S_Optimized->getObjValue()) << "\n";
