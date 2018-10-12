@@ -3,7 +3,6 @@
 
 #include "pch.h"
 #include <iostream>
-#include <string>
 #include "Problem.h"
 #include "ProblemInstanceReader.h"
 #include "Solution.h"
@@ -12,7 +11,6 @@
 #include "IGxSA.h"
 #include "LS1.h"
 #include <chrono>
-#include <iostream>
 #include <fstream>
 using namespace std;
 
@@ -29,11 +27,11 @@ static void saveToAFile(string EXPERIMENTS_OUTPUT_FOLDER_LOC, string outputFileN
 
 int main()
 {
-	string EXPERIMENTS_FOLDER_LOC = "C:\\Users\\osman\\OneDrive\\Belgeler\\Okul\\Academic Works\\Continuing\\obnoxious p-median\\Experiments";
+	string EXPERIMENTS_FOLDER_LOC = "D:\\Experiments\\obnoxious p-median";
 
 	//Experiment Parameters
 	int SEED;
-	const int NUM_TRY = 1;
+	const int NUM_TRY = 10;
 	int MAX_ITER = 1000;
 	bool printInfo = true;
 
@@ -65,17 +63,17 @@ int main()
 
 	inFile.close();
 
-	//File output
-	string OUTPUT_FILE_NAME = "Exp2Deneme3_" + to_string(MAX_ITER) + string("iter.txt");
-
 	Problem *p;
 	Solution * S;
 
 	//ALgorithm parameters
-	double alpha = 0.35;
-	double dFactor = 0.3;
+	double alpha;
+	double dFactor;
 
-	for (size_t i = 0; i < instanceSize; i++)
+	//File output
+	string OUTPUT_FILE_NAME = "Exp2_Deneme_" + to_string(MAX_ITER) + string("iter.txt");
+
+	for (size_t i = 7; i < instanceSize; i++)
 	{
 		if (printInfo) {
 			std::cout << instanceSet[i] << "\n";
@@ -84,41 +82,65 @@ int main()
 		ProblemInstanceReader * pir = new ProblemInstanceReader(instanceSet[i]);
 		p = pir->GetProblem();
 
-		int d = floor(dFactor * p->getP());
-		SEED = 2018;
-
-		for (size_t j = 0; j < NUM_TRY; j++)
+		alpha = 0.1;
+		for (size_t a = 0; a < 9; a++)
 		{
-			if (printInfo) {
-				std::cout << "\talpha:  " << to_string(alpha) << "\t, p:  " << to_string(d) << "\t, Try " << to_string(j) << "\n";
+			alpha += 0.1;
+			dFactor = 0.1;
+			for (size_t b = 0; b < 9; b++)
+			{
+				dFactor += 0.1;
+				int d = floor(dFactor * p->getP());
+				SEED = 2021;
+
+				for (size_t j = 3; j < NUM_TRY; j++)
+				{
+					if (printInfo) {
+						std::cout << "\talpha:  " << to_string(alpha) << "\t, p:  " << to_string(d) << "\t, Try " << to_string(j) << "\n";
+					}
+
+					srand(SEED++);
+					IteratedGreedy * ig = new IteratedGreedy(p, d, alpha);
+					ig->setPrintInfo(printInfo);
+
+					auto start = std::chrono::high_resolution_clock::now();
+
+					S = GC2::constructSolution(p, alpha);
+					//LS1::search(S);
+					Solution * S_Optimized = ig->solve(S, MAX_ITER);
+
+					auto finish = std::chrono::high_resolution_clock::now();
+
+					std::chrono::duration<double> elapsed = finish - start;
+					double f = S_Optimized->getObjValue();
+					double t = elapsed.count();
+
+					if (f > BKS[i]) { //new best solution found 
+						string data = instanceSet[i] + "\n";
+						data += S_Optimized->toString();
+						data += "\n";
+						data += "alpha: " + to_string(alpha) + "\n";
+						data += "dFactor: " + to_string(dFactor) + "\n";
+						data += "SEED: " + to_string(SEED) + "\n";
+						data += __DATE__;
+						data += ", ";
+						data += __TIME__;
+						data += "\n";
+						saveToAFile(EXPERIMENTS_FOLDER_LOC, "NewBestSolutions.txt", data);
+					}
+
+					string line = string(instanceSet[i]) + string(" ") + to_string(BKS[i]) + string(" ") + to_string(j) + string(" ") + to_string(alpha) + string(" ") + to_string(dFactor) + string(" ") + to_string(f) + string(" ") + to_string(t);
+
+					if (printInfo) {
+						std::cout << "\t\tObj: " << to_string(S_Optimized->getObjValue()) << "\n";
+					}
+
+					saveToAFile(EXPERIMENTS_FOLDER_LOC, OUTPUT_FILE_NAME, line);
+
+					delete S;
+					delete ig;
+				}
 			}
-
-			srand(SEED++);
-			IGxSA * ig = new IGxSA(p, d, alpha);
-			ig->setPrintInfo(printInfo);
-
-			auto start = std::chrono::high_resolution_clock::now();
-
-			S = GC2::constructSolution(p, alpha);
-			//LS1::search(S);
-			Solution * S_Optimized = ig->solve(S, MAX_ITER);
-
-			auto finish = std::chrono::high_resolution_clock::now();
-
-			std::chrono::duration<double> elapsed = finish - start;
-			double f = S_Optimized->getObjValue();
-			double t = elapsed.count();
-
-			string line = string(instanceSet[i]) + string(" ") + string(" ") + to_string(BKS[i]) + to_string(j) + string(" ") + to_string(alpha) + string(" ") + to_string(dFactor) + string(" ") + to_string(f) + string(" ") + to_string(t);
-
-			if (printInfo) {
-				std::cout << "\t\tObj: " << to_string(S_Optimized->getObjValue()) << "\n";
-			}
-
-			saveToAFile(EXPERIMENTS_FOLDER_LOC, OUTPUT_FILE_NAME, line);
-
-			delete S;
-			delete ig;
 		}
 
 		delete pir;

@@ -1,5 +1,6 @@
 #pragma once
 #include "Problem.h"
+#include <string>
 
 class Solution
 {
@@ -20,6 +21,7 @@ public:
 	int * getClosedFacilitiesList() const;
 	double getObjValue() const;
 	int * getOpenFacilitiesList();
+	std::string toString() const;
 
 private:	
 	int binarySearchForIntArray(int *arr, int len, int key) const;

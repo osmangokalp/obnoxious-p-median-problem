@@ -2,6 +2,8 @@
 #include "Solution.h"
 #include "Util.h"
 #include <iostream>
+#include <string>
+using namespace std;
 
 Solution::Solution(Problem *problem)
 {
@@ -317,6 +319,17 @@ double Solution::getObjValue() const
 int * Solution::getOpenFacilitiesList()
 {
 	return openFacilitiesList;
+}
+
+string Solution::toString() const
+{
+	string s = "";
+	for (size_t i = 0; i < openFacilityCount; i++)
+	{
+		s += to_string(openFacilitiesList[i]) + " ";
+	}
+	s += "\nObj. Value: " + to_string(getObjValue());
+	return s;
 }
 
 void Solution::insert(int i, int index, int facilityToBeOpened)
