@@ -124,7 +124,12 @@ int main()
 						data += "dFactor: " + to_string(dFactor) + "\n";
 						data += "SEED: " + to_string(SEED) + "\n";
 						data += Util::getCurrentDateAndTime() + "\n";
-
+						if (Util::validateSolution(S_Optimized, f, p)) {
+							data += "VALID SOLUTION\n";
+						}
+						else {
+							data += "INVALID SOLUTION !!!\n";
+						}
 						saveToAFile(EXPERIMENTS_FOLDER_LOC, "NewBestSolutions.txt", data);
 					}
 

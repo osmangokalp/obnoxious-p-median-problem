@@ -79,3 +79,46 @@ std::string Util::getCurrentDateAndTime() {
 
 	return result;
 }
+
+bool Util::validateSolution(Solution * S, double obj, Problem * problem)
+{
+	bool multipleFacility = false;
+
+	int * openFacilities = S->getOpenFacilitiesList();
+	int openFacilityCount = S->getOpenFacilityCount();
+
+	if (openFacilityCount != problem ->getP()) {
+		return false;
+	}
+
+
+	int * freq = new int[openFacilityCount] {0};
+	for (size_t i = 0; i < openFacilityCount; i++)
+	{
+		if (++freq[openFacilities[i]] > 1) {
+			delete[] freq;
+			return false; //multiple copies of facility
+		}
+	}
+	delete[] freq;
+
+	double total = 0.0;
+	for (size_t i = 0; i < problem ->getN(); i++)
+	{
+		double min = DBL_MAX;
+		for (size_t j = 0; j < openFacilityCount; j++)
+		{
+			if (problem->getDM()[i][openFacilities[j]] < min) {
+				min = problem->getDM()[i][openFacilities[j]];
+			}
+		}
+		total += min;
+	}
+
+	if (total == obj) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
