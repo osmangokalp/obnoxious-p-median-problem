@@ -4,6 +4,7 @@
 #include "pch.h"
 #include <iostream>
 #include "Problem.h"
+#include "Util.h"
 #include "ProblemInstanceReader.h"
 #include "Solution.h"
 #include "GC2.h"
@@ -122,10 +123,8 @@ int main()
 						data += "alpha: " + to_string(alpha) + "\n";
 						data += "dFactor: " + to_string(dFactor) + "\n";
 						data += "SEED: " + to_string(SEED) + "\n";
-						data += __DATE__;
-						data += ", ";
-						data += __TIME__;
-						data += "\n";
+						data += Util::getCurrentDateAndTime() + "\n";
+
 						saveToAFile(EXPERIMENTS_FOLDER_LOC, "NewBestSolutions.txt", data);
 					}
 
