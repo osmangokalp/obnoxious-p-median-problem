@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "IteratedGreedy.h"
 #include "LS1.h"
+#include "RLS1.h"
 #include "GC2.h"
 #include "Util.h"
 #include <iostream>
@@ -45,7 +46,7 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER)
 		}
 		applyConstruction1(SPrime, d);
 
-		//LS1::search(SPrime);
+		RLS1::search(SPrime);
 
 		//acceptance
 		if (SPrime->getObjValue() > S->getObjValue()) {

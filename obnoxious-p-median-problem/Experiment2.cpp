@@ -11,6 +11,7 @@
 #include "IteratedGreedy.h"
 #include "IGxSA.h"
 #include "LS1.h"
+#include "RLS1.h"
 #include <chrono>
 #include <fstream>
 using namespace std;
@@ -107,7 +108,7 @@ int main()
 					auto start = std::chrono::high_resolution_clock::now();
 
 					S = GC2::constructSolution(p, alpha);
-					//LS1::search(S);
+					RLS1::search(S);
 					Solution * S_Optimized = ig->solve(S, MAX_ITER);
 
 					auto finish = std::chrono::high_resolution_clock::now();
