@@ -68,13 +68,13 @@ int main()
 	Solution * S;
 
 	//ALgorithm parameters
-	double alpha;
-	double dFactor;
+	double alpha = 0.3;
+	double dFactor = 0.5;
 
 	//File output
 	string OUTPUT_FILE_NAME = "Exp2_Deneme_" + to_string(MAX_ITER) + string("iter.txt");
 
-	for (size_t i = 7; i < instanceSize; i++)
+	for (size_t i = 0; i < instanceSize; i++)
 	{
 		if (printInfo) {
 			std::cout << instanceSet[i] << "\n";
@@ -83,18 +83,18 @@ int main()
 		ProblemInstanceReader * pir = new ProblemInstanceReader(instanceSet[i]);
 		p = pir->GetProblem();
 
-		alpha = 0.1;
+	/*	alpha = 0.0;
 		for (size_t a = 0; a < 9; a++)
 		{
 			alpha += 0.1;
-			dFactor = 0.1;
+			dFactor = 0.0;
 			for (size_t b = 0; b < 9; b++)
 			{
-				dFactor += 0.1;
+				dFactor += 0.1;*/
 				int d = floor(dFactor * p->getP());
-				SEED = 2021;
+				SEED = 2018;
 
-				for (size_t j = 3; j < NUM_TRY; j++)
+				for (size_t j = 0; j < NUM_TRY; j++)
 				{
 					if (printInfo) {
 						std::cout << "\talpha:  " << to_string(alpha) << "\t, p:  " << to_string(d) << "\t, Try " << to_string(j) << "\n";
@@ -144,8 +144,8 @@ int main()
 					delete S;
 					delete ig;
 				}
-			}
-		}
+		//	}
+		//}
 
 		delete pir;
 	}

@@ -30,9 +30,8 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER)
 	//stats
 	int numOfSuccessiveUnimproved = 0;
 	int maxNumOfSuccessiveUnimproved = 0;
-	int numOfCallsToApplyDestruction1 = 0;
-	int numOfCallsToApplyDestruction2 = 0;
 	int lastImprovedIter = 0;
+	int numOfBestSolutionFound = 0;
 
 	for (size_t i = 0; i < MAX_ITER; i++)
 	{		
@@ -40,11 +39,9 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER)
 
 		if (numOfSuccessiveUnimproved == 0) {
 			applyDestruction2(SPrime, d);
-			numOfCallsToApplyDestruction2++;
 		}
 		else {
 			applyDestruction1(SPrime, d);
-			numOfCallsToApplyDestruction1++;
 		}
 		applyConstruction1(SPrime, d);
 
@@ -58,6 +55,7 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER)
 			if (S->getObjValue() > SStar->getObjValue()) {
 				delete SStar;
 				SStar = S->cloneSolution();
+				numOfBestSolutionFound++;
 			}
 
 			numOfSuccessiveUnimproved = 0;
@@ -74,8 +72,7 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER)
 	if (printInfo) {
 		std::cout << "\t\tlastImprovedIter: " << lastImprovedIter << "\n";
 		std::cout << "\t\tmaxNumOfSuccessiveUnimproved: " << maxNumOfSuccessiveUnimproved << "\n";
-		std::cout << "\t\tnumOfCallsToApplyDestruction1: " << numOfCallsToApplyDestruction1 << "\n";
-		std::cout << "\t\tnumOfCallsToApplyDestruction2: " << numOfCallsToApplyDestruction2 << "\n";
+		std::cout << "\t\tnumOfBestSolutionFound: " << numOfBestSolutionFound << "\n";
 	}
 
 	return SStar;
