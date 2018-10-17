@@ -28,6 +28,9 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER)
 	SStar = S->cloneSolution();
 	Solution *SPrime;
 
+	double alphaMin = 0.1;
+	double alphaMax = 0.9;
+
 	//stats
 	int numOfSuccessiveUnimproved = 0;
 	int maxNumOfSuccessiveUnimproved = 0;
@@ -37,13 +40,22 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER)
 	for (size_t i = 0; i < MAX_ITER; i++)
 	{		
 		SPrime = S->cloneSolution();
+		double pFactor = (((double)rand() / (RAND_MAX)) / 2.0) + 0.3; //rand[0.3,0.8]
+		d = floor(pFactor * problem->getP());
 
 		if (numOfSuccessiveUnimproved == 0) {
-			applyDestruction2(SPrime, d);
+			//applyDestruction2(SPrime, d);
+			alpha = alphaMax;
 		}
 		else {
-			applyDestruction1(SPrime, d);
+			//applyDestruction1(SPrime, d);
+			alpha -= 0.05;
+			if (alpha < alphaMin) {
+				alpha = alphaMin;
+			}
 		}
+
+		applyDestruction1(SPrime, d);
 		applyConstruction1(SPrime, d);
 
 		RLS1::search(SPrime);

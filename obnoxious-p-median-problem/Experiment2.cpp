@@ -70,10 +70,10 @@ int main()
 
 	//ALgorithm parameters
 	double alpha = 0.3;
-	double dFactor = 0.5;
+	double pFactor = 0.5;
 
 	//File output
-	string OUTPUT_FILE_NAME = "Exp2_Deneme_" + to_string(MAX_ITER) + string("iter.txt");
+	string OUTPUT_FILE_NAME = "Exp2_Deneme5_" + to_string(MAX_ITER) + string("iter.txt");
 
 	for (size_t i = 0; i < instanceSize; i++)
 	{
@@ -88,11 +88,11 @@ int main()
 		for (size_t a = 0; a < 9; a++)
 		{
 			alpha += 0.1;
-			dFactor = 0.0;
+			pFactor = 0.0;
 			for (size_t b = 0; b < 9; b++)
 			{
-				dFactor += 0.1;*/
-				int d = floor(dFactor * p->getP());
+				pFactor += 0.1;*/
+				int d = floor(pFactor * p->getP());
 				SEED = 2018;
 
 				for (size_t j = 0; j < NUM_TRY; j++)
@@ -122,7 +122,7 @@ int main()
 						data += S_Optimized->toString();
 						data += "\n";
 						data += "alpha: " + to_string(alpha) + "\n";
-						data += "dFactor: " + to_string(dFactor) + "\n";
+						data += "dFactor: " + to_string(pFactor) + "\n";
 						data += "SEED: " + to_string(SEED) + "\n";
 						data += Util::getCurrentDateAndTime() + "\n";
 						if (Util::validateSolution(S_Optimized, f, p)) {
@@ -134,7 +134,7 @@ int main()
 						saveToAFile(EXPERIMENTS_FOLDER_LOC, "NewBestSolutions.txt", data);
 					}
 
-					string line = string(instanceSet[i]) + string(" ") + to_string(BKS[i]) + string(" ") + to_string(j) + string(" ") + to_string(alpha) + string(" ") + to_string(dFactor) + string(" ") + to_string(f) + string(" ") + to_string(t);
+					string line = string(instanceSet[i]) + string(" ") + to_string(BKS[i]) + string(" ") + to_string(j) + string(" ") + to_string(alpha) + string(" ") + to_string(pFactor) + string(" ") + to_string(f) + string(" ") + to_string(t);
 
 					if (printInfo) {
 						std::cout << "\t\tObj: " << to_string(S_Optimized->getObjValue()) << "\n";

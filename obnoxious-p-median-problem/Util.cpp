@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <string>
 #include <ctime>
+#include <iostream>
 
 using namespace std;
 
@@ -92,10 +93,20 @@ bool Util::validateSolution(Solution * S, double obj, Problem * problem)
 	}
 
 
-	int * freq = new int[openFacilityCount] {0};
+	int * freq = new int[problem->getM()] {0};
 	for (size_t i = 0; i < openFacilityCount; i++)
 	{
 		if (++freq[openFacilities[i]] > 1) {
+			for (size_t j = 0; j < openFacilityCount; j++)
+			{
+				std::cout << to_string(openFacilities[j]) + ", ";
+			}
+			std::cout << "\n";
+			for (size_t j = 0; j < openFacilityCount; j++)
+			{
+				std::cout << to_string(freq[j]) + ", ";
+			}
+			std::cout << "\n" << to_string(freq[openFacilities[i]]);
 			delete[] freq;
 			return false; //multiple copies of facility
 		}
