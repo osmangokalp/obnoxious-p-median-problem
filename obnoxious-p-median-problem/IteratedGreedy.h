@@ -5,9 +5,9 @@
 class IteratedGreedy
 {
 public:
-	IteratedGreedy(Problem *problem, int d, double alpha);
+	IteratedGreedy(Problem *problem);
 	~IteratedGreedy();
-	Solution * solve(Solution * sol, int MAX_ITER);
+	Solution * solve(Solution * sol, int MAX_ITER, double alphaMax, double alphaMin, double alphaInc);
 	void setPrintInfo(bool b);
 
 private:

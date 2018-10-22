@@ -37,7 +37,7 @@ int main()
 	int MAX_ITER = 1000;
 	bool printInfo = true;
 
-	string instancesToBeSolved = "limited_instances.txt";
+	string instancesToBeSolved = "representative_instances.txt";
 
 	ifstream inFile;
 	string line, delimiter;
@@ -68,12 +68,13 @@ int main()
 	Problem *p;
 	Solution * S;
 
-	//ALgorithm parameters
-	double alpha = 0.3;
-	double pFactor = 0.5;
+	//Algorithm parameters
+	double alphaMax = 0.9;
+	double alphaMin = 0.1;
+	double alphaInc = 0.1;
 
 	//File output
-	string OUTPUT_FILE_NAME = "Exp2_Deneme5_" + to_string(MAX_ITER) + string("iter.txt");
+	string OUTPUT_FILE_NAME = "Exp2_Deneme10_" + to_string(MAX_ITER) + string("iter.txt");
 
 	for (size_t i = 0; i < instanceSize; i++)
 	{
@@ -92,24 +93,23 @@ int main()
 			for (size_t b = 0; b < 9; b++)
 			{
 				pFactor += 0.1;*/
-				int d = floor(pFactor * p->getP());
 				SEED = 2018;
 
 				for (size_t j = 0; j < NUM_TRY; j++)
 				{
 					if (printInfo) {
-						std::cout << "\talpha:  " << to_string(alpha) << "\t, p:  " << to_string(d) << "\t, Try " << to_string(j) << "\n";
+						std::cout << "\tTry " << to_string(j) << "\n";
 					}
 
 					srand(SEED++);
-					IteratedGreedy * ig = new IteratedGreedy(p, d, alpha);
+					IteratedGreedy * ig = new IteratedGreedy(p);
 					ig->setPrintInfo(printInfo);
 
 					auto start = std::chrono::high_resolution_clock::now();
 
-					S = GC2::constructSolution(p, alpha);
+					S = GC2::constructSolution(p, alphaMax);
 					RLS1::search(S);
-					Solution * S_Optimized = ig->solve(S, MAX_ITER);
+					Solution * S_Optimized = ig->solve(S, MAX_ITER, alphaMax, alphaMin, alphaInc);
 
 					auto finish = std::chrono::high_resolution_clock::now();
 
@@ -121,8 +121,9 @@ int main()
 						string data = instanceSet[i] + "\n";
 						data += S_Optimized->toString();
 						data += "\n";
-						data += "alpha: " + to_string(alpha) + "\n";
-						data += "dFactor: " + to_string(pFactor) + "\n";
+						data += "alphaMax: " + to_string(alphaMax) + "\n";
+						data += "alphaMin: " + to_string(alphaMin) + "\n";
+						data += "alphaInc: " + to_string(alphaInc) + "\n";
 						data += "SEED: " + to_string(SEED) + "\n";
 						data += Util::getCurrentDateAndTime() + "\n";
 						if (Util::validateSolution(S_Optimized, f, p)) {
@@ -131,10 +132,10 @@ int main()
 						else {
 							data += "INVALID SOLUTION !!!\n";
 						}
-						saveToAFile(EXPERIMENTS_FOLDER_LOC, "NewBestSolutions.txt", data);
+						saveToAFile(EXPERIMENTS_FOLDER_LOC, "NewBest_" + instanceSet[i], data);
 					}
 
-					string line = string(instanceSet[i]) + string(" ") + to_string(BKS[i]) + string(" ") + to_string(j) + string(" ") + to_string(alpha) + string(" ") + to_string(pFactor) + string(" ") + to_string(f) + string(" ") + to_string(t);
+					string line = string(instanceSet[i]) + string(" ") + to_string(j) + string(" ")  + to_string(f) + string(" ") + to_string(t);
 
 					if (printInfo) {
 						std::cout << "\t\tObj: " << to_string(S_Optimized->getObjValue()) << "\n";

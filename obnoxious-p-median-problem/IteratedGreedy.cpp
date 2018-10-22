@@ -5,12 +5,11 @@
 #include "GC2.h"
 #include "Util.h"
 #include <iostream>
+#include <random>
 
-IteratedGreedy::IteratedGreedy(Problem * problem, int d, double alpha)
+IteratedGreedy::IteratedGreedy(Problem * problem)
 {
 	this->problem = problem;
-	this->d = d;
-	this->alpha = alpha;
 	this->printInfo = false;
 	this->S = NULL;
 	this->SStar = NULL;
@@ -22,14 +21,11 @@ IteratedGreedy::~IteratedGreedy()
 	delete S;
 }
 
-Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER)
+Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMax, double alphaMin, double alphaInc)
 {
 	S = sol->cloneSolution();
 	SStar = S->cloneSolution();
 	Solution *SPrime;
-
-	double alphaMin = 0.1;
-	double alphaMax = 0.9;
 
 	//stats
 	int numOfSuccessiveUnimproved = 0;
@@ -37,23 +33,29 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER)
 	int lastImprovedIter = 0;
 	int numOfBestSolutionFound = 0;
 
+	std::default_random_engine generator;
+	std::normal_distribution<double> distribution(0.5, 0.2);
+
 	for (size_t i = 0; i < MAX_ITER; i++)
-	{		
+	{
 		SPrime = S->cloneSolution();
-		double pFactor = (((double)rand() / (RAND_MAX)) / 2.0) + 0.3; //rand[0.3,0.8]
-		d = floor(pFactor * problem->getP());
+		//double pFactor = (((double)rand() / (RAND_MAX)) / 2) + 0.3; //rand[0.3,0.8]
 
 		if (numOfSuccessiveUnimproved == 0) {
-			//applyDestruction2(SPrime, d);
-			alpha = alphaMax;
+			alpha = alphaMax;  //high level exploitation
 		}
 		else {
-			//applyDestruction1(SPrime, d);
-			alpha -= 0.05;
+			alpha -= alphaInc; // increase exploration
 			if (alpha < alphaMin) {
 				alpha = alphaMin;
 			}
 		}
+
+		double pFactor = distribution(generator);
+		while (pFactor < 0.1 || pFactor > 0.9) {
+			pFactor = distribution(generator);
+		}
+		d = floor(pFactor * problem->getP());
 
 		applyDestruction1(SPrime, d);
 		applyConstruction1(SPrime, d);
