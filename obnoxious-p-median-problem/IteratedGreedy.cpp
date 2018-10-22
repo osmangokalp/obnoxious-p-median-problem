@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "IteratedGreedy.h"
-#include "LS1.h"
-#include "RLS1.h"
+#include "LocalSearch.h"
 #include "GC2.h"
 #include "Util.h"
 #include <iostream>
@@ -39,7 +38,6 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMax, 
 	for (size_t i = 0; i < MAX_ITER; i++)
 	{
 		SPrime = S->cloneSolution();
-		//double pFactor = (((double)rand() / (RAND_MAX)) / 2) + 0.3; //rand[0.3,0.8]
 
 		if (numOfSuccessiveUnimproved == 0) {
 			alpha = alphaMax;  //high level exploitation
@@ -60,7 +58,7 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMax, 
 		applyDestruction1(SPrime, d);
 		applyConstruction1(SPrime, d);
 
-		RLS1::search(SPrime);
+		LocalSearch::RLS1(SPrime);
 
 		//acceptance
 		if (SPrime->getObjValue() > S->getObjValue()) {

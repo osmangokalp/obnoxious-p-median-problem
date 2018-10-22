@@ -152,24 +152,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="GC2.h" />
-    <ClInclude Include="IGxSA.h" />
     <ClInclude Include="IteratedGreedy.h" />
-    <ClInclude Include="LS1.h" />
+    <ClInclude Include="LocalSearch.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Problem.h" />
     <ClInclude Include="ProblemInstanceReader.h" />
-    <ClInclude Include="RLS1.h" />
     <ClInclude Include="Solution.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Experiment1.cpp" />
     <ClCompile Include="Experiment2.cpp" />
     <ClCompile Include="GC2.cpp" />
-    <ClCompile Include="IGxSA.cpp" />
     <ClCompile Include="IteratedGreedy.cpp" />
-    <ClCompile Include="LS1.cpp" />
-    <ClCompile Include="obnoxious-p-median-problem.cpp" />
+    <ClCompile Include="LocalSearch.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -178,7 +173,6 @@
     </ClCompile>
     <ClCompile Include="Problem.cpp" />
     <ClCompile Include="ProblemInstanceReader.cpp" />
-    <ClCompile Include="RLS1.cpp" />
     <ClCompile Include="Solution.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>

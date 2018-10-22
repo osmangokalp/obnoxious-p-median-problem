@@ -16,7 +16,7 @@ Solution::Solution(Problem *problem)
 	openFacilitiesPerClient = new int *[n];
 	for (size_t i = 0; i < n; i++)
 	{
-		openFacilitiesPerClient[i] = new int[p] {0}; //init by 0
+		openFacilitiesPerClient[i] = new int[m] {0}; //init by 0
 	}
 
 	closedFacilitiesList = new int[m];
@@ -45,7 +45,7 @@ Solution::Solution(Problem * problem, int ** openFacilitiesPerClient, int * open
 	this->openFacilitiesPerClient = new int *[n];
 	for (size_t i = 0; i < n; i++)
 	{
-		this->openFacilitiesPerClient[i] = new int[p];
+		this->openFacilitiesPerClient[i] = new int[m];
 	}
 
 	//init open facilities per client

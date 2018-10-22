@@ -9,9 +9,7 @@
 #include "Solution.h"
 #include "GC2.h"
 #include "IteratedGreedy.h"
-#include "IGxSA.h"
-#include "LS1.h"
-#include "RLS1.h"
+#include "LocalSearch.h"
 #include <chrono>
 #include <fstream>
 using namespace std;
@@ -74,7 +72,7 @@ int main()
 	double alphaInc = 0.1;
 
 	//File output
-	string OUTPUT_FILE_NAME = "Exp2_Deneme10_" + to_string(MAX_ITER) + string("iter.txt");
+	string OUTPUT_FILE_NAME = "Exp2_Deneme11_px10" + string("iter.txt");
 
 	for (size_t i = 0; i < instanceSize; i++)
 	{
@@ -85,69 +83,61 @@ int main()
 		ProblemInstanceReader * pir = new ProblemInstanceReader(instanceSet[i]);
 		p = pir->GetProblem();
 
-	/*	alpha = 0.0;
-		for (size_t a = 0; a < 9; a++)
+		MAX_ITER = p->getP() * 10;
+
+		SEED = 2018;
+
+		for (size_t j = 0; j < NUM_TRY; j++)
 		{
-			alpha += 0.1;
-			pFactor = 0.0;
-			for (size_t b = 0; b < 9; b++)
-			{
-				pFactor += 0.1;*/
-				SEED = 2018;
+			if (printInfo) {
+				std::cout << "\tTry " << to_string(j) << "\n";
+			}
 
-				for (size_t j = 0; j < NUM_TRY; j++)
-				{
-					if (printInfo) {
-						std::cout << "\tTry " << to_string(j) << "\n";
-					}
+			srand(SEED++);
+			IteratedGreedy * ig = new IteratedGreedy(p);
+			ig->setPrintInfo(printInfo);
 
-					srand(SEED++);
-					IteratedGreedy * ig = new IteratedGreedy(p);
-					ig->setPrintInfo(printInfo);
+			auto start = std::chrono::high_resolution_clock::now();
 
-					auto start = std::chrono::high_resolution_clock::now();
+			S = GC2::constructSolution(p, alphaMax);
+			LocalSearch::RLS1(S);
+			Solution * S_Optimized = ig->solve(S, MAX_ITER, alphaMax, alphaMin, alphaInc);
 
-					S = GC2::constructSolution(p, alphaMax);
-					RLS1::search(S);
-					Solution * S_Optimized = ig->solve(S, MAX_ITER, alphaMax, alphaMin, alphaInc);
+			auto finish = std::chrono::high_resolution_clock::now();
 
-					auto finish = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double> elapsed = finish - start;
+			double f = S_Optimized->getObjValue();
+			double t = elapsed.count();
 
-					std::chrono::duration<double> elapsed = finish - start;
-					double f = S_Optimized->getObjValue();
-					double t = elapsed.count();
-
-					if (f > BKS[i]) { //new best solution found 
-						string data = instanceSet[i] + "\n";
-						data += S_Optimized->toString();
-						data += "\n";
-						data += "alphaMax: " + to_string(alphaMax) + "\n";
-						data += "alphaMin: " + to_string(alphaMin) + "\n";
-						data += "alphaInc: " + to_string(alphaInc) + "\n";
-						data += "SEED: " + to_string(SEED) + "\n";
-						data += Util::getCurrentDateAndTime() + "\n";
-						if (Util::validateSolution(S_Optimized, f, p)) {
-							data += "VALID SOLUTION\n";
-						}
-						else {
-							data += "INVALID SOLUTION !!!\n";
-						}
-						saveToAFile(EXPERIMENTS_FOLDER_LOC, "NewBest_" + instanceSet[i], data);
-					}
-
-					string line = string(instanceSet[i]) + string(" ") + to_string(j) + string(" ")  + to_string(f) + string(" ") + to_string(t);
-
-					if (printInfo) {
-						std::cout << "\t\tObj: " << to_string(S_Optimized->getObjValue()) << "\n";
-					}
-
-					saveToAFile(EXPERIMENTS_FOLDER_LOC, OUTPUT_FILE_NAME, line);
-
-					delete S;
-					delete ig;
+			if (f > BKS[i]) { //new best solution found 
+				string data = instanceSet[i] + "\n";
+				data += S_Optimized->toString();
+				data += "\n";
+				data += "alphaMax: " + to_string(alphaMax) + "\n";
+				data += "alphaMin: " + to_string(alphaMin) + "\n";
+				data += "alphaInc: " + to_string(alphaInc) + "\n";
+				data += "SEED: " + to_string(SEED) + "\n";
+				data += Util::getCurrentDateAndTime() + "\n";
+				if (Util::validateSolution(S_Optimized, f, p)) {
+					data += "VALID SOLUTION\n";
 				}
-		//	}
-		//}
+				else {
+					data += "INVALID SOLUTION !!!\n";
+				}
+				saveToAFile(EXPERIMENTS_FOLDER_LOC, "NewBest_" + instanceSet[i], data);
+			}
+
+			string line = string(instanceSet[i]) + string(" ") + to_string(j) + string(" ") + to_string(f) + string(" ") + to_string(t);
+
+			if (printInfo) {
+				std::cout << "\t\tObj: " << to_string(S_Optimized->getObjValue()) << "\n";
+			}
+
+			saveToAFile(EXPERIMENTS_FOLDER_LOC, OUTPUT_FILE_NAME, line);
+
+			delete S;
+			delete ig;
+		}
 
 		delete pir;
 	}
