@@ -58,7 +58,7 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMax, 
 		applyDestruction1(SPrime, d);
 		applyConstruction1(SPrime, d);
 
-		LocalSearch::RLS1(SPrime);
+		LocalSearch::RLS1_and_RLS2(SPrime);
 
 		//acceptance
 		if (SPrime->getObjValue() > S->getObjValue()) {

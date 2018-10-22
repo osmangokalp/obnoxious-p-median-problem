@@ -161,7 +161,7 @@
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Experiment2.cpp" />
+    <ClCompile Include="Experiment.cpp" />
     <ClCompile Include="GC2.cpp" />
     <ClCompile Include="IteratedGreedy.cpp" />
     <ClCompile Include="LocalSearch.cpp" />

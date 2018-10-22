@@ -57,6 +57,7 @@ double LocalSearch::LS1(Solution * S)
 	return totalDiff;
 }
 
+//first remove best, then add best
 double LocalSearch::RLS1(Solution * S)
 {
 	double totalDiff = 0;
@@ -99,15 +100,87 @@ double LocalSearch::RLS1(Solution * S)
 		closedFacilitiesCount--;
 		openFacilitiesCount++;
 
-		if (deltaOpen + deltaClose > 0) {
+		double diff = deltaOpen + deltaClose;
+		if (diff > 0) {
 			improve = true;
+			totalDiff += diff;
 		}
 	}
 
 	return totalDiff;
 }
 
+//first add best, then remove best
 double LocalSearch::RLS2(Solution * S)
 {
-	return 0.0;
+	double totalDiff = 0;
+	int openFacilitiesCount = S->getOpenFacilityCount();
+	int closedFacilitiesCount = S->getClosedFacilityCount();
+	int *openFacilities = S->getOpenFacilitiesList();
+	int *closedFacilities = S->getClosedFacilitiesList();
+
+	bool improve = true;
+	while (improve) {
+		improve = false;
+
+		double deltaOpen = -999999999;
+		int toBeOpened = -1;
+		for (size_t i = 0; i < closedFacilitiesCount; i++)
+		{
+			double d = S->evaluateFacilityOpening(closedFacilities[i]);
+			if (d > deltaOpen) {
+				deltaOpen = d;
+				toBeOpened = closedFacilities[i];
+			}
+		}
+
+		S->openFacility(toBeOpened, deltaOpen);
+		closedFacilitiesCount--;
+		openFacilitiesCount++;
+
+		double deltaClose = -1;
+		int toBeClosed = -1;
+		for (size_t i = 0; i < openFacilitiesCount; i++)
+		{
+			double d = S->evaluateFacilityClosing(openFacilities[i]);
+			if (d > deltaClose) {
+				deltaClose = d;
+				toBeClosed = openFacilities[i];
+			}
+		}
+
+		S->closeFacility(toBeClosed, deltaClose);
+		closedFacilitiesCount++;
+		openFacilitiesCount--;
+
+		double diff = deltaOpen + deltaClose;
+		if (diff > 0) {
+			improve = true;
+			totalDiff += diff;
+		}
+	}
+
+	return totalDiff;
+}
+
+double LocalSearch::RLS1_and_RLS2(Solution * S)
+{
+	bool improved = true;
+	double totalDiff = 0;
+
+	while (improved) {
+		improved = false;
+		double diff = LocalSearch::RLS1(S);
+		if (diff > 0) {
+			improved = true;
+			totalDiff += diff;
+		}
+		diff = LocalSearch::RLS2(S);
+		if (diff > 0) {
+			improved = true;
+			totalDiff += diff;
+		}
+	}
+
+	return totalDiff;
 }

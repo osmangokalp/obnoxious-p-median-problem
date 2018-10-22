@@ -62,10 +62,10 @@
     <ClCompile Include="IteratedGreedy.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
-    <ClCompile Include="Experiment2.cpp">
+    <ClCompile Include="LocalSearch.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
-    <ClCompile Include="LocalSearch.cpp">
+    <ClCompile Include="Experiment.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
   </ItemGroup>
