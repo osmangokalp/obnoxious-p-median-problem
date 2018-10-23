@@ -31,12 +31,22 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMax, 
 	int maxNumOfSuccessiveUnimproved = 0;
 	int lastImprovedIter = 0;
 	int numOfBestSolutionFound = 0;
+	int restartCount = 0;
 
 	std::default_random_engine generator;
 	std::normal_distribution<double> distribution(0.5, 0.2);
 
 	for (size_t i = 0; i < MAX_ITER; i++)
 	{
+		////restart search
+		//if (numOfSuccessiveUnimproved == problem->getP() / 2) {
+		//	numOfSuccessiveUnimproved = 0;
+		//	restartCount++;
+		//	delete S;
+		//	S = GC2::constructSolution(problem, alphaMax);
+		//	LocalSearch::RLS1_and_RLS2(S);
+		//}
+
 		SPrime = S->cloneSolution();
 
 		if (numOfSuccessiveUnimproved == 0) {
@@ -58,7 +68,7 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMax, 
 		applyDestruction1(SPrime, d);
 		applyConstruction1(SPrime, d);
 
-		LocalSearch::RLS1_and_RLS2(SPrime);
+		LocalSearch::compositeLS(SPrime);
 
 		//acceptance
 		if (SPrime->getObjValue() > S->getObjValue()) {
@@ -86,6 +96,7 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMax, 
 		std::cout << "\t\tlastImprovedIter: " << lastImprovedIter << "\n";
 		std::cout << "\t\tmaxNumOfSuccessiveUnimproved: " << maxNumOfSuccessiveUnimproved << "\n";
 		std::cout << "\t\tnumOfBestSolutionFound: " << numOfBestSolutionFound << "\n";
+		std::cout << "\t\trestartCount: " << restartCount << "\n";
 	}
 
 	return SStar;

@@ -72,9 +72,9 @@ int main()
 	double alphaInc = 0.1;
 
 	//File output
-	string OUTPUT_FILE_NAME = "Exp_Deneme11_px10" + string("iter.txt");
+	string OUTPUT_FILE_NAME = "Exp_Deneme12_px10" + string("iter.txt");
 
-	for (size_t i = 0; i < instanceSize; i++)
+	for (size_t i = 7; i < instanceSize; i++)
 	{
 		if (printInfo) {
 			std::cout << instanceSet[i] << "\n";
@@ -100,7 +100,7 @@ int main()
 			auto start = std::chrono::high_resolution_clock::now();
 
 			S = GC2::constructSolution(p, alphaMax);
-			LocalSearch::RLS1_and_RLS2(S);
+			LocalSearch::compositeLS(S);
 			Solution * S_Optimized = ig->solve(S, MAX_ITER, alphaMax, alphaMin, alphaInc);
 
 			auto finish = std::chrono::high_resolution_clock::now();
