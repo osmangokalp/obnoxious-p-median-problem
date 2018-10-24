@@ -69,12 +69,12 @@ int main()
 	//Algorithm parameters
 	double alphaMax = 0.9;
 	double alphaMin = 0.1;
-	double alphaInc = 0.1;
+	double alphaDecreaseFactor = 0.9;
 
 	//File output
 	string OUTPUT_FILE_NAME = "Exp_Deneme12_px10" + string("iter.txt");
 
-	for (size_t i = 7; i < instanceSize; i++)
+	for (size_t i = 0; i < instanceSize; i++)
 	{
 		if (printInfo) {
 			std::cout << instanceSet[i] << "\n";
@@ -101,7 +101,7 @@ int main()
 
 			S = GC2::constructSolution(p, alphaMax);
 			LocalSearch::compositeLS(S);
-			Solution * S_Optimized = ig->solve(S, MAX_ITER, alphaMax, alphaMin, alphaInc);
+			Solution * S_Optimized = ig->solve(S, MAX_ITER, alphaMax, alphaMin, alphaDecreaseFactor);
 
 			auto finish = std::chrono::high_resolution_clock::now();
 
@@ -115,7 +115,7 @@ int main()
 				data += "\n";
 				data += "alphaMax: " + to_string(alphaMax) + "\n";
 				data += "alphaMin: " + to_string(alphaMin) + "\n";
-				data += "alphaInc: " + to_string(alphaInc) + "\n";
+				data += "alphaInc: " + to_string(alphaDecreaseFactor) + "\n";
 				data += "SEED: " + to_string(SEED) + "\n";
 				data += Util::getCurrentDateAndTime() + "\n";
 				if (Util::validateSolution(S_Optimized, f, p)) {

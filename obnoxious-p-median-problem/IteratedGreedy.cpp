@@ -20,7 +20,7 @@ IteratedGreedy::~IteratedGreedy()
 	delete S;
 }
 
-Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMax, double alphaMin, double alphaInc)
+Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMax, double alphaMin, double alphaDecreaseFactor)
 {
 	S = sol->cloneSolution();
 	SStar = S->cloneSolution();
@@ -39,12 +39,12 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMax, 
 	for (size_t i = 0; i < MAX_ITER; i++)
 	{
 		////restart search
-		//if (numOfSuccessiveUnimproved == problem->getP() / 2) {
+		//if (numOfSuccessiveUnimproved == problem->getP()) {
 		//	numOfSuccessiveUnimproved = 0;
 		//	restartCount++;
 		//	delete S;
 		//	S = GC2::constructSolution(problem, alphaMax);
-		//	LocalSearch::RLS1_and_RLS2(S);
+		//	LocalSearch::compositeLS(S);
 		//}
 
 		SPrime = S->cloneSolution();
@@ -53,7 +53,7 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMax, 
 			alpha = alphaMax;  //high level exploitation
 		}
 		else {
-			alpha -= alphaInc; // increase exploration
+			alpha *= alphaDecreaseFactor; // increase exploration
 			if (alpha < alphaMin) {
 				alpha = alphaMin;
 			}
