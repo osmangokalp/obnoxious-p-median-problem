@@ -21,6 +21,7 @@ public:
 	int * getClosedFacilitiesList() const;
 	double getObjValue() const;
 	int * getOpenFacilitiesList();
+	int selectMinAvgPositionFacility() const;
 	std::string toString() const;
 
 private:	

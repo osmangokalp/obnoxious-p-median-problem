@@ -35,7 +35,7 @@ int main()
 	int MAX_ITER = 1000;
 	bool printInfo = true;
 
-	string instancesToBeSolved = "representative_instances.txt";
+	string instancesToBeSolved = "setA.txt";
 
 	ifstream inFile;
 	string line, delimiter;
@@ -72,7 +72,7 @@ int main()
 	double alphaDecreaseFactor = 0.9;
 
 	//File output
-	string OUTPUT_FILE_NAME = "Exp_Deneme12_px10" + string("iter.txt");
+	string OUTPUT_FILE_NAME = instancesToBeSolved +  "_px2" + string("iter.txt");
 
 	for (size_t i = 0; i < instanceSize; i++)
 	{
@@ -83,7 +83,7 @@ int main()
 		ProblemInstanceReader * pir = new ProblemInstanceReader(instanceSet[i]);
 		p = pir->GetProblem();
 
-		MAX_ITER = p->getP() * 10;
+		MAX_ITER = p->getP() * 2;
 
 		SEED = 2018;
 

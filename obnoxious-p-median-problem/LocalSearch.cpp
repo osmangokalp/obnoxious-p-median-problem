@@ -60,151 +60,155 @@ double LocalSearch::exchange(Solution * S)
 //first remove best, then add best
 double LocalSearch::RLS1(Solution * S)
 {
-	double totalDiff = 0;
 	int openFacilitiesCount = S->getOpenFacilityCount();
 	int closedFacilitiesCount = S->getClosedFacilityCount();
 	int *openFacilities = S->getOpenFacilitiesList();
 	int *closedFacilities = S->getClosedFacilitiesList();
 
-	bool improve = true;
-	while (improve) {
-		improve = false;
 
-		double deltaClose = -1;
-		int toBeClosed = -1;
-		for (size_t i = 0; i < openFacilitiesCount; i++)
-		{
-			double d = S->evaluateFacilityClosing(openFacilities[i]);
-			if (d > deltaClose) {
-				deltaClose = d;
-				toBeClosed = openFacilities[i];
-			}
-		}
-
-		S->closeFacility(toBeClosed, deltaClose);
-		closedFacilitiesCount++;
-		openFacilitiesCount--;
-
-		double deltaOpen = -999999999;
-		int toBeOpened = -1;
-		for (size_t i = 0; i < closedFacilitiesCount; i++)
-		{
-			double d = S->evaluateFacilityOpening(closedFacilities[i]);
-			if (d > deltaOpen) {
-				deltaOpen = d;
-				toBeOpened = closedFacilities[i];
-			}
-		}
-
-		S->openFacility(toBeOpened, deltaOpen);
-		closedFacilitiesCount--;
-		openFacilitiesCount++;
-
-		double diff = deltaOpen + deltaClose;
-		if (diff > 0) {
-			improve = true;
-			totalDiff += diff;
+	double deltaClose = -1;
+	int toBeClosed = -1;
+	for (size_t i = 0; i < openFacilitiesCount; i++)
+	{
+		double d = S->evaluateFacilityClosing(openFacilities[i]);
+		if (d > deltaClose) {
+			deltaClose = d;
+			toBeClosed = openFacilities[i];
 		}
 	}
 
-	return totalDiff;
+	S->closeFacility(toBeClosed, deltaClose);
+	closedFacilitiesCount++;
+	openFacilitiesCount--;
+
+	double deltaOpen = -999999999;
+	int toBeOpened = -1;
+	for (size_t i = 0; i < closedFacilitiesCount; i++)
+	{
+		double d = S->evaluateFacilityOpening(closedFacilities[i]);
+		if (d > deltaOpen) {
+			deltaOpen = d;
+			toBeOpened = closedFacilities[i];
+		}
+	}
+
+	S->openFacility(toBeOpened, deltaOpen);
+	closedFacilitiesCount--;
+	openFacilitiesCount++;
+
+	double diff = deltaOpen + deltaClose;
+
+	return diff;
 }
 
 //first add best, then remove best
 double LocalSearch::RLS2(Solution * S)
 {
-	double totalDiff = 0;
 	int openFacilitiesCount = S->getOpenFacilityCount();
 	int closedFacilitiesCount = S->getClosedFacilityCount();
 	int *openFacilities = S->getOpenFacilitiesList();
 	int *closedFacilities = S->getClosedFacilitiesList();
 
-	bool improve = true;
-	while (improve) {
-		improve = false;
 
-		double deltaOpen = -999999999;
-		int toBeOpened = -1;
-		for (size_t i = 0; i < closedFacilitiesCount; i++)
-		{
-			double d = S->evaluateFacilityOpening(closedFacilities[i]);
-			if (d > deltaOpen) {
-				deltaOpen = d;
-				toBeOpened = closedFacilities[i];
-			}
-		}
-
-		S->openFacility(toBeOpened, deltaOpen);
-		closedFacilitiesCount--;
-		openFacilitiesCount++;
-
-		double deltaClose = -1;
-		int toBeClosed = -1;
-		for (size_t i = 0; i < openFacilitiesCount; i++)
-		{
-			double d = S->evaluateFacilityClosing(openFacilities[i]);
-			if (d > deltaClose) {
-				deltaClose = d;
-				toBeClosed = openFacilities[i];
-			}
-		}
-
-		S->closeFacility(toBeClosed, deltaClose);
-		closedFacilitiesCount++;
-		openFacilitiesCount--;
-
-		double diff = deltaOpen + deltaClose;
-		if (diff > 0) {
-			improve = true;
-			totalDiff += diff;
+	double deltaOpen = -999999999;
+	int toBeOpened = -1;
+	for (size_t i = 0; i < closedFacilitiesCount; i++)
+	{
+		double d = S->evaluateFacilityOpening(closedFacilities[i]);
+		if (d > deltaOpen) {
+			deltaOpen = d;
+			toBeOpened = closedFacilities[i];
 		}
 	}
 
-	return totalDiff;
+	S->openFacility(toBeOpened, deltaOpen);
+	closedFacilitiesCount--;
+	openFacilitiesCount++;
+
+	double deltaClose = -1;
+	int toBeClosed = -1;
+	for (size_t i = 0; i < openFacilitiesCount; i++)
+	{
+		double d = S->evaluateFacilityClosing(openFacilities[i]);
+		if (d > deltaClose) {
+			deltaClose = d;
+			toBeClosed = openFacilities[i];
+		}
+	}
+
+	S->closeFacility(toBeClosed, deltaClose);
+	closedFacilitiesCount++;
+	openFacilitiesCount--;
+
+	double diff = deltaOpen + deltaClose;
+
+	return diff;
 }
 
 double LocalSearch::removeFreqWorstAddBest(Solution * S)
 {
-	bool improved = true;
 	double diff, deltaOpen, deltaClose;
-	double totalDiff = 0;
 	int selected;
 
 	int closedFacilitiesCount = S->getClosedFacilityCount();
 	int *closedFacilities = S->getClosedFacilitiesList();
 
-	while (improved) {
-		improved = false;
+	selected = S->selectMostFrequentAtFirst();
+	deltaClose = S->evaluateFacilityClosing(selected);
 
-		selected = S->selectMostFrequentAtFirst();
-		deltaClose = S->evaluateFacilityClosing(selected);
+	S->closeFacility(selected, deltaClose);
+	closedFacilitiesCount++;
 
-		S->closeFacility(selected, deltaClose);
-		closedFacilitiesCount++;
-
-		deltaOpen = -999999999;
-		selected = -1;
-		for (size_t i = 0; i < closedFacilitiesCount; i++)
-		{
-			double d = S->evaluateFacilityOpening(closedFacilities[i]);
-			if (d > deltaOpen) {
-				deltaOpen = d;
-				selected = closedFacilities[i];
-			}
+	deltaOpen = -999999999;
+	selected = -1;
+	for (size_t i = 0; i < closedFacilitiesCount; i++)
+	{
+		double d = S->evaluateFacilityOpening(closedFacilities[i]);
+		if (d > deltaOpen) {
+			deltaOpen = d;
+			selected = closedFacilities[i];
 		}
-
-		S->openFacility(selected, deltaOpen);
-		closedFacilitiesCount--;
-
-		double diff = deltaOpen + deltaClose;
-		if (diff > 0) {
-			improved = true;
-			totalDiff += diff;
-		}
-
 	}
 
-	return totalDiff;
+	S->openFacility(selected, deltaOpen);
+	closedFacilitiesCount--;
+
+	diff = deltaOpen + deltaClose;
+
+	return diff;
+}
+
+double LocalSearch::avgPositionPriorityLS(Solution * S)
+{
+	double diff, deltaOpen, deltaClose;
+	int selected;
+
+	int closedFacilitiesCount = S->getClosedFacilityCount();
+	int *closedFacilities = S->getClosedFacilitiesList();
+
+	selected = S->selectMinAvgPositionFacility();
+	deltaClose = S->evaluateFacilityClosing(selected);
+
+	S->closeFacility(selected, deltaClose);
+	closedFacilitiesCount++;
+
+	deltaOpen = -999999999;
+	selected = -1;
+	for (size_t i = 0; i < closedFacilitiesCount; i++)
+	{
+		double d = S->evaluateFacilityOpening(closedFacilities[i]);
+		if (d > deltaOpen) {
+			deltaOpen = d;
+			selected = closedFacilities[i];
+		}
+	}
+
+	S->openFacility(selected, deltaOpen);
+	closedFacilitiesCount--;
+
+	diff = deltaOpen + deltaClose;
+
+	return diff;
 }
 
 double LocalSearch::compositeLS(Solution * S)
@@ -214,26 +218,28 @@ double LocalSearch::compositeLS(Solution * S)
 
 	while (improved) {
 		improved = false;
-		double diff = LocalSearch::RLS1(S);
-		if (diff > 0) {
+		double diff;
+
+		diff = LocalSearch::RLS1(S);
+		while (diff > 0) {
 			improved = true;
 			totalDiff += diff;
+			diff = LocalSearch::RLS1(S);
 		}
+
 		diff = LocalSearch::RLS2(S);
-		if (diff > 0) {
+		while (diff > 0) {
 			improved = true;
 			totalDiff += diff;
+			diff = LocalSearch::RLS2(S);
 		}
-		diff = LocalSearch::exchange(S);
-		if (diff > 0) {
+
+		/*diff = LocalSearch::avgPositionPriorityLS(S);
+		while (diff > 0) {
 			improved = true;
 			totalDiff += diff;
-		}
-		diff = LocalSearch::removeFreqWorstAddBest(S);
-		if (diff > 0) {
-			improved = true;
-			totalDiff += diff;
-		}
+			diff = LocalSearch::avgPositionPriorityLS(S);
+		}*/
 	}
 
 	return totalDiff;

@@ -10,6 +10,7 @@ public:
 	static double RLS1(Solution *S);
 	static double RLS2(Solution *S);
 	static double removeFreqWorstAddBest(Solution *S);
+	static double avgPositionPriorityLS(Solution *S);
 	static double compositeLS(Solution *S);
 };
 

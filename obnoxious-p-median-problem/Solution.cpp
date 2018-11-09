@@ -321,6 +321,37 @@ int * Solution::getOpenFacilitiesList()
 	return openFacilitiesList;
 }
 
+int Solution::selectMinAvgPositionFacility() const
+{
+	double * totalPositions = new double[m] {0};
+	int minFacility = -1;
+	double min = DBL_MAX;
+
+	for (size_t i = 0; i < n; i++)
+	{
+		for (size_t j = 0; j < openFacilityCount; j++)
+		{
+			int facility = openFacilitiesPerClient[i][j];
+			totalPositions[facility] += j;
+			double x = totalPositions[facility];
+			double y = x;
+		}
+	}
+
+	for (size_t i = 0; i < openFacilityCount; i++)
+	{
+		int facility = openFacilitiesList[i];
+		if (totalPositions[facility] < min) {
+			min = totalPositions[i];
+			minFacility = facility;
+		}
+	}
+
+	delete[] totalPositions;
+
+	return minFacility;
+}
+
 string Solution::toString() const
 {
 	string s = "";
