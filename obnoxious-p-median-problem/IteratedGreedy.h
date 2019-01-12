@@ -7,7 +7,7 @@ class IteratedGreedy
 public:
 	IteratedGreedy(Problem *problem);
 	~IteratedGreedy();
-	Solution * solve(Solution * sol, int MAX_ITER, double alphaMax, double alphaMin, double alphaInc);
+	Solution * solve(Solution * sol, int MAX_ITER, double alpha, double dPercent, int GREEDY_SELECTION_MODE, int ALPHA_MODE, int LS_MODE, int D_MODE);
 	void setPrintInfo(bool b);
 
 private:
@@ -18,9 +18,8 @@ private:
 	Solution * SStar;
 	Solution * S;
 
-	void applyConstruction1(Solution *SPrime, int d) const;
-	void applyDestruction1(Solution *SPrime, int d) const;
-	void applyDestruction2(Solution *SPrime, int d) const;
+	void applyConstruction(Solution *SPrime, int d, int GREEDY_SELECTION_MODE) const;
+	void applyDestruction(Solution *SPrime, int d) const;
 	int * selectRandomFromOpenFacilities(Solution *sol, int d) const;
 };
 

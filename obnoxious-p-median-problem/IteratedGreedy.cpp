@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "IteratedGreedy.h"
 #include "LocalSearch.h"
-#include "GC2.h"
+#include "GreedySelection.h"
 #include "Util.h"
 #include <iostream>
 #include <random>
@@ -20,55 +20,50 @@ IteratedGreedy::~IteratedGreedy()
 	delete S;
 }
 
-Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMax, double alphaMin, double alphaDecreaseFactor)
+Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMean, double dPercentMean, int GREEDY_SELECTION_MODE, int ALPHA_MODE, int LS_MODE, int D_MODE)
 {
 	S = sol->cloneSolution();
 	SStar = S->cloneSolution();
 	Solution *SPrime;
+	this -> alpha = alphaMean;
+	d = floor(dPercentMean * problem->getP());
+	if (d == 0) {
+		d = 1;
+	}
 
 	//stats
 	int numOfSuccessiveUnimproved = 0;
 	int maxNumOfSuccessiveUnimproved = 0;
 	int lastImprovedIter = 0;
 	int numOfBestSolutionFound = 0;
-	int restartCount = 0;
 
 	std::default_random_engine generator;
-	std::normal_distribution<double> distribution(0.5, 0.2);
+	std::normal_distribution<double> n_dist(dPercentMean, 0.2);
+	std::uniform_real_distribution<double> u_dist(alphaMean, 1.0);
 
 	for (size_t i = 0; i < MAX_ITER; i++)
 	{
-		////restart search
-		//if (numOfSuccessiveUnimproved == problem->getP()) {
-		//	numOfSuccessiveUnimproved = 0;
-		//	restartCount++;
-		//	delete S;
-		//	S = GC2::constructSolution(problem, alphaMax);
-		//	LocalSearch::compositeLS(S);
-		//}
-
 		SPrime = S->cloneSolution();
 
-		if (numOfSuccessiveUnimproved == 0) {
-			alpha = alphaMax;  //high level exploitation
+		if (ALPHA_MODE == 1) { //random
+			alpha = u_dist(generator);
 		}
-		else {
-			alpha *= alphaDecreaseFactor; // increase exploration
-			if (alpha < alphaMin) {
-				alpha = alphaMin;
+
+		if (D_MODE == 1) {
+			double dPercent = n_dist(generator);
+			while (dPercent < 0.1 || dPercent > 0.9) {
+				dPercent = n_dist(generator);
+			}
+			d = floor(dPercent * problem->getP());
+			if (d == 0) {
+				d = 1;
 			}
 		}
 
-		double pFactor = distribution(generator);
-		while (pFactor < 0.1 || pFactor > 0.9) {
-			pFactor = distribution(generator);
-		}
-		d = floor(pFactor * problem->getP());
+		applyDestruction(SPrime, d);
+		applyConstruction(SPrime, d, GREEDY_SELECTION_MODE);
 
-		applyDestruction1(SPrime, d);
-		applyConstruction1(SPrime, d);
-
-		LocalSearch::compositeLS(SPrime);
+		LocalSearch::search(SPrime, LS_MODE);
 
 		//acceptance
 		if (SPrime->getObjValue() > S->getObjValue()) {
@@ -96,7 +91,6 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMax, 
 		std::cout << "\t\tlastImprovedIter: " << lastImprovedIter << "\n";
 		std::cout << "\t\tmaxNumOfSuccessiveUnimproved: " << maxNumOfSuccessiveUnimproved << "\n";
 		std::cout << "\t\tnumOfBestSolutionFound: " << numOfBestSolutionFound << "\n";
-		std::cout << "\t\trestartCount: " << restartCount << "\n";
 	}
 
 	return SStar;
@@ -107,45 +101,30 @@ void IteratedGreedy::setPrintInfo(bool b)
 	this->printInfo = b;
 }
 
-void IteratedGreedy::applyConstruction1(Solution * SPrime, int d) const
+void IteratedGreedy::applyConstruction(Solution * SPrime, int d, int GREEDY_SELECTION_MODE) const
 {
 	int selected;
 	double diff;
 
 	//construction
 	for (int j = 0; j < d; j++) {
-		GC2::selectCandidate(SPrime, alpha, selected, diff);
+		GreedySelection::select(SPrime, alpha, selected, diff, GREEDY_SELECTION_MODE);
 		SPrime->openFacility(selected, diff);
 	}
 }
 
 //remove randomly selected d open facilities
-void IteratedGreedy::applyDestruction1(Solution * SPrime, int d) const
+void IteratedGreedy::applyDestruction(Solution * SPrime, int d) const
 {
 	int *out = selectRandomFromOpenFacilities(SPrime, d);
 	double diff;
 
 	//destruction
 	for (int j = 0; j < d; j++) {
-		diff = SPrime->evaluateFacilityClosing(out[j]);
-		SPrime->closeFacility(out[j], diff);
+		SPrime->evaluateAndCloseFacility(out[j]);
 	}
 
 	delete[] out;
-}
-
-//remove the most frequent facility d times
-void IteratedGreedy::applyDestruction2(Solution * SPrime, int d) const
-{
-	int selected;
-	double diff;
-
-	//destruction
-	for (int j = 0; j < d; j++) {
-		selected = SPrime->selectMostFrequentAtFirst();
-		diff = SPrime->evaluateFacilityClosing(selected);
-		SPrime->closeFacility(selected, diff);
-	}
 }
 
 int * IteratedGreedy::selectRandomFromOpenFacilities(Solution * sol, int d) const

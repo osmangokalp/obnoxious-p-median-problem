@@ -27,9 +27,6 @@
     <ClInclude Include="Solution.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
-    <ClInclude Include="GC2.h">
-      <Filter>Üst Bilgi Dosyaları</Filter>
-    </ClInclude>
     <ClInclude Include="Util.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
@@ -37,6 +34,9 @@
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
     <ClInclude Include="LocalSearch.h">
+      <Filter>Üst Bilgi Dosyaları</Filter>
+    </ClInclude>
+    <ClInclude Include="GreedySelection.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,9 +53,6 @@
     <ClCompile Include="Solution.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
-    <ClCompile Include="GC2.cpp">
-      <Filter>Kaynak Dosyalar</Filter>
-    </ClCompile>
     <ClCompile Include="Util.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
@@ -66,6 +63,9 @@
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
     <ClCompile Include="Experiment.cpp">
+      <Filter>Kaynak Dosyalar</Filter>
+    </ClCompile>
+    <ClCompile Include="GreedySelection.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
   </ItemGroup>

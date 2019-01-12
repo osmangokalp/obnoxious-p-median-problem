@@ -151,7 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="GC2.h" />
+    <ClInclude Include="GreedySelection.h" />
     <ClInclude Include="IteratedGreedy.h" />
     <ClInclude Include="LocalSearch.h" />
     <ClInclude Include="pch.h" />
@@ -162,7 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Experiment.cpp" />
-    <ClCompile Include="GC2.cpp" />
+    <ClCompile Include="GreedySelection.cpp" />
     <ClCompile Include="IteratedGreedy.cpp" />
     <ClCompile Include="LocalSearch.cpp" />
     <ClCompile Include="pch.cpp">
