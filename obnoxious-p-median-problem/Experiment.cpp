@@ -37,7 +37,7 @@ int main()
 	int MAX_ITER = 1000;
 	bool printInfo = true;
 
-	string instancesToBeSolved = "representative_instances.txt";
+	string instancesToBeSolved = "setB.txt";
 
 	ifstream inFile;
 	string line, delimiter;
@@ -69,7 +69,7 @@ int main()
 	Solution * S;
 
 	//Algorithm parameters
-	double alphaInitial = 0.75;
+	double alphaInitial = 0.5;
 	double alpha = 0.5;
 	double dPercent = 0.5;
 	int GREEDY_SELECTION_MODE = 1; //0: rpg, 1:GRASP
@@ -81,16 +81,18 @@ int main()
 	//for(dPercent = 0.1; dPercent <= 0.9; dPercent += 0.1)
 	//for (alpha = 0.0; alpha <= 1.0; alpha += 0.1) {
 
-		stringstream stream, stream2;
+		stringstream stream, stream2, stream3;
 		stream << fixed << setprecision(2) << alpha;
-		string alphaS = stream.str();
+		string alphaStr = stream.str();
 		stream2 << fixed << setprecision(2) << dPercent;
-		string dPercentS = stream2.str();
+		string dPercentStr = stream2.str();
+		stream3 << fixed << setprecision(2) << alphaInitial;
+		string alphaInitialStr = stream3.str();
 
 		//File output
 		string OUTPUT_FILE_NAME = instancesToBeSolved + "_px" + to_string(iterFactor) + "iter_GM" + to_string(GREEDY_SELECTION_MODE)
 			+ "_AM" + to_string(ALPHA_MODE) + "_LM" + to_string(LS_MODE) + "_DM" + to_string(D_MODE) 
-			+ "_alpha" + alphaS + "_dPercent" + dPercentS + string(".txt");
+			+ "_alphaInitial" + alphaInitialStr + "_alpha" + alphaStr + "_dPercent" + dPercentStr + string(".txt");
 
 		for (size_t i = 0; i < instanceSize; i++)
 		{
