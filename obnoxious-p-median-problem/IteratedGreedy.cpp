@@ -20,12 +20,12 @@ IteratedGreedy::~IteratedGreedy()
 	delete S;
 }
 
-Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMean, double dPercentMean, int GREEDY_SELECTION_MODE, int ALPHA_MODE, int LS_MODE, int D_MODE)
+Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMin, double dPercentMean, int GREEDY_SELECTION_MODE, int ALPHA_MODE, int LS_MODE, int D_MODE)
 {
 	S = sol->cloneSolution();
 	SStar = S->cloneSolution();
 	Solution *SPrime;
-	this -> alpha = alphaMean;
+	this -> alpha = alphaMin;
 	d = floor(dPercentMean * problem->getP());
 	if (d == 0) {
 		d = 1;
@@ -38,22 +38,29 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMean,
 	int numOfBestSolutionFound = 0;
 
 	std::default_random_engine generator;
-	std::normal_distribution<double> n_dist(dPercentMean, 0.2);
-	std::uniform_real_distribution<double> u_dist(alphaMean, 1.0);
+	//std::normal_distribution<double> n_dist_dPercent(dPercentMean, 0.2);
+	//std::normal_distribution<double> n_dist_alpha(alphaMin, 0.2);
+	std::uniform_real_distribution<double> u_dist_alpha(alphaMin, 1.0);
+	std::uniform_real_distribution<double> u_dist_dPercent(dPercentMean - 0.1, dPercentMean + 0.1);
 
 	for (size_t i = 0; i < MAX_ITER; i++)
 	{
 		SPrime = S->cloneSolution();
 
 		if (ALPHA_MODE == 1) { //random
-			alpha = u_dist(generator);
+			alpha = u_dist_alpha(generator);
+			/*alpha = n_dist_alpha(generator);
+			while (alpha > 1.0 || alpha < 0.0) {
+				alpha = n_dist_alpha(generator);
+			}*/
 		}
 
 		if (D_MODE == 1) {
-			double dPercent = n_dist(generator);
+			/*double dPercent = n_dist_dPercent(generator);
 			while (dPercent < 0.1 || dPercent > 0.9) {
-				dPercent = n_dist(generator);
-			}
+				dPercent = n_dist_dPercent(generator);
+			}*/
+			double dPercent = u_dist_dPercent(generator);
 			d = floor(dPercent * problem->getP());
 			if (d == 0) {
 				d = 1;

@@ -37,7 +37,7 @@ int main()
 	int MAX_ITER = 1000;
 	bool printInfo = true;
 
-	string instancesToBeSolved = "setB.txt";
+	string instancesToBeSolved = "representative_instances.txt";
 
 	ifstream inFile;
 	string line, delimiter;
@@ -73,9 +73,9 @@ int main()
 	double alpha = 0.5;
 	double dPercent = 0.5;
 	int GREEDY_SELECTION_MODE = 1; //0: rpg, 1:GRASP
-	int ALPHA_MODE = 1; //0: static, 1: u[0.5,1] random
-	int LS_MODE = 3; //0: no LS, 1: RLS1, 2: RLS2, 3: composite LS
-	int D_MODE = 1; //0: static, 1: n(0.5, 0.2) random
+	int ALPHA_MODE = 1; //0: static, 1: u[alpha, 1.0] random
+	int LS_MODE = 2; //0: no LS, 1: RLS1, 2: RLS2, 3: composite LS
+	int D_MODE = 1; //0: static, 1: u(dPercent - 0.1, dPercent + 0.1) random
 	int iterFactor = 5;
 
 	//for(dPercent = 0.1; dPercent <= 0.9; dPercent += 0.1)
