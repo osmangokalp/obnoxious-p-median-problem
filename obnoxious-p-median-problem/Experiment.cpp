@@ -142,7 +142,7 @@ int main()
 				}
 
 				string line = string(instanceSet[i]) + string(" ") + to_string(tryNo) + string(" ") + to_string(f) + string(" ") 
-					+ to_string(ig->getElapsedTime()) + string(" ") + to_string(ig->getIterCounter())
+					+ to_string(ig->getElapsedTime()) + string(" ") + to_string(ig->getIterCounter() - 1)
 					+ string(" ") + to_string(GREEDY_SELECTION_MODE)
 					+ string(" ") + to_string(ALPHA_MODE) + string(" ") + to_string(LS_MODE) + string(" ") + to_string(D_MODE)
 					+ string(" ") + alphaInitialStr + string(" ") + alphaStr + string(" ") + pFactorStr;
