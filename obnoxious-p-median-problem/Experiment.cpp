@@ -10,7 +10,6 @@
 #include "GreedySelection.h"
 #include "IteratedGreedy.h"
 #include "LocalSearch.h"
-#include <chrono>
 #include <fstream>
 #include <iomanip> // setprecision
 #include <sstream> // stringstream
@@ -29,12 +28,13 @@ static void saveToAFile(string EXPERIMENTS_OUTPUT_FOLDER_LOC, string outputFileN
 
 int main()
 {
-	string EXPERIMENTS_FOLDER_LOC = "D:\\Experiments\\obnoxious p-median";
+	string EXPERIMENTS_FOLDER_LOC = "D:\\Experiments\\obnoxious p-median\\New";
 
 	//Experiment Parameters
 	int SEED;
 	const int NUM_TRY = 10;
-	int MAX_ITER = 1000;
+	int MAX_ITER = 0;
+	double MAX_TIME = 0;
 	bool printInfo = true;
 
 	string instancesToBeSolved = "representative_instances.txt";
@@ -69,30 +69,31 @@ int main()
 	Solution * S;
 
 	//Algorithm parameters
-	double alphaInitial = 0.5;
+	double alphaInitial = 0.0;
 	double alpha = 0.5;
-	double dPercent = 0.5;
+	double pFactor = 0.5;
 	int GREEDY_SELECTION_MODE = 1; //0: rpg, 1:GRASP
-	int ALPHA_MODE = 1; //0: static, 1: u[alpha, 1.0] random
-	int LS_MODE = 2; //0: no LS, 1: RLS1, 2: RLS2, 3: composite LS
-	int D_MODE = 1; //0: static, 1: u(dPercent - 0.1, dPercent + 0.1) random
+	int ALPHA_MODE = 0; //0: static, 1: u[alpha, 1.0] random
+	int LS_MODE = 3; //0: no LS, 1: RLS1, 2: RLS2, 3: composite LS
+	int D_MODE = 0; //0: static, 1: u(dPercent - 0.1, dPercent + 0.1) random
 	int iterFactor = 5;
+	double timeFactor = 999999;
 
-	//for(dPercent = 0.1; dPercent <= 0.9; dPercent += 0.1)
-	//for (alpha = 0.0; alpha <= 1.0; alpha += 0.1) {
-
-		stringstream stream, stream2, stream3;
+	for(pFactor = 0.1; pFactor <= 0.9; pFactor += 0.1)
+	for (alpha = 0.0; alpha <= 1.0; alpha += 0.1) {
+	//for (LS_MODE = 0; LS_MODE <= 3; LS_MODE++) {
+		stringstream stream, stream2, stream3, stream4;
 		stream << fixed << setprecision(2) << alpha;
 		string alphaStr = stream.str();
-		stream2 << fixed << setprecision(2) << dPercent;
-		string dPercentStr = stream2.str();
+		stream2 << fixed << setprecision(2) << pFactor;
+		string pFactorStr = stream2.str();
 		stream3 << fixed << setprecision(2) << alphaInitial;
 		string alphaInitialStr = stream3.str();
+		stream4 << fixed << setprecision(2) << timeFactor;
+		string timeFactorStr = stream4.str();
 
 		//File output
-		string OUTPUT_FILE_NAME = instancesToBeSolved + "_px" + to_string(iterFactor) + "iter_GM" + to_string(GREEDY_SELECTION_MODE)
-			+ "_AM" + to_string(ALPHA_MODE) + "_LM" + to_string(LS_MODE) + "_DM" + to_string(D_MODE) 
-			+ "_alphaInitial" + alphaInitialStr + "_alpha" + alphaStr + "_dPercent" + dPercentStr + string(".txt");
+		string OUTPUT_FILE_NAME = instancesToBeSolved + "_alpha_pFactor_parameter_analysis_" + "_iterF_" + to_string(iterFactor) +"_timeF_" + timeFactorStr + string(".txt");
 
 		for (size_t i = 0; i < instanceSize; i++)
 		{
@@ -103,31 +104,26 @@ int main()
 			ProblemInstanceReader * pir = new ProblemInstanceReader(instanceSet[i]);
 			p = pir->GetProblem();
 
-			MAX_ITER = p->getP() * iterFactor;
+			MAX_ITER = iterFactor * p->getP();
+			MAX_TIME = timeFactor * p->getP();
 
 			SEED = 2019;
 
-			for (size_t j = 0; j < NUM_TRY; j++)
+			for (size_t tryNo = 0; tryNo < NUM_TRY; tryNo++)
 			{
 				if (printInfo) {
-					std::cout << "\tTry " << to_string(j) << "\n";
+					std::cout << "\tTry " << to_string(tryNo) << "\n";
 				}
 
 				srand(SEED++);
 				IteratedGreedy * ig = new IteratedGreedy(p);
 				ig->setPrintInfo(printInfo);
 
-				auto start = std::chrono::high_resolution_clock::now();
-
 				S = GreedySelection::constructSolution(p, alphaInitial, GREEDY_SELECTION_MODE);
 				LocalSearch::search(S, LS_MODE);
-				Solution * S_Optimized = ig->solve(S, MAX_ITER, alpha, dPercent, GREEDY_SELECTION_MODE, ALPHA_MODE, LS_MODE, D_MODE);
+				Solution * S_Optimized = ig->solve(S, MAX_ITER, MAX_TIME, alpha, pFactor, GREEDY_SELECTION_MODE, ALPHA_MODE, LS_MODE, D_MODE);
 
-				auto finish = std::chrono::high_resolution_clock::now();
-
-				std::chrono::duration<double> elapsed = finish - start;
 				double f = S_Optimized->getObjValue();
-				double t = elapsed.count();
 
 				if (f > BKS[i]) { //new best solution found 
 					string data = instanceSet[i] + "\n";
@@ -142,10 +138,14 @@ int main()
 					else {
 						data += "INVALID SOLUTION !!!\n";
 					}
-					saveToAFile(EXPERIMENTS_FOLDER_LOC, "NewBest_" + instanceSet[i], data);
+					saveToAFile(EXPERIMENTS_FOLDER_LOC + "\\NewBest", "NewBest_" + instanceSet[i], data);
 				}
 
-				string line = string(instanceSet[i]) + string(" ") + to_string(j) + string(" ") + to_string(f) + string(" ") + to_string(t);
+				string line = string(instanceSet[i]) + string(" ") + to_string(tryNo) + string(" ") + to_string(f) + string(" ") 
+					+ to_string(ig->getElapsedTime()) + string(" ") + to_string(ig->getIterCounter())
+					+ string(" ") + to_string(GREEDY_SELECTION_MODE)
+					+ string(" ") + to_string(ALPHA_MODE) + string(" ") + to_string(LS_MODE) + string(" ") + to_string(D_MODE)
+					+ string(" ") + alphaInitialStr + string(" ") + alphaStr + string(" ") + pFactorStr;
 
 				if (printInfo) {
 					std::cout << "\t\tObj: " << to_string(S_Optimized->getObjValue()) << "\n";
@@ -159,7 +159,7 @@ int main()
 
 			delete pir;
 		}
-	//}
+	}
 	delete[] instanceSet;
 	delete[] BKS;
 }

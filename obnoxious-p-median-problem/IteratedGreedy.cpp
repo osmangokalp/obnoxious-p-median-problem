@@ -5,6 +5,7 @@
 #include "Util.h"
 #include <iostream>
 #include <random>
+#include <chrono>
 
 IteratedGreedy::IteratedGreedy(Problem * problem)
 {
@@ -20,8 +21,10 @@ IteratedGreedy::~IteratedGreedy()
 	delete S;
 }
 
-Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMin, double dPercentMean, int GREEDY_SELECTION_MODE, int ALPHA_MODE, int LS_MODE, int D_MODE)
+Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double MAX_TIME, double alphaMin, double dPercentMean, int GREEDY_SELECTION_MODE, int ALPHA_MODE, int LS_MODE, int D_MODE)
 {
+	auto start = std::chrono::high_resolution_clock::now();
+
 	S = sol->cloneSolution();
 	SStar = S->cloneSolution();
 	Solution *SPrime;
@@ -43,7 +46,10 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMin, 
 	std::uniform_real_distribution<double> u_dist_alpha(alphaMin, 1.0);
 	std::uniform_real_distribution<double> u_dist_dPercent(dPercentMean - 0.1, dPercentMean + 0.1);
 
-	for (size_t i = 0; i < MAX_ITER; i++)
+	iterCounter = 1;
+	timeElapsed = 0.0;
+
+	while (iterCounter <= MAX_ITER && timeElapsed <= MAX_TIME)
 	{
 		SPrime = S->cloneSolution();
 
@@ -76,7 +82,7 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMin, 
 		if (SPrime->getObjValue() > S->getObjValue()) {
 			delete S;
 			S = SPrime;
-			lastImprovedIter = i;
+			lastImprovedIter = iterCounter;
 			if (S->getObjValue() > SStar->getObjValue()) {
 				delete SStar;
 				SStar = S->cloneSolution();
@@ -92,6 +98,12 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMin, 
 			}
 			delete SPrime;
 		}
+
+		auto finish = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double> elapsed = finish - start;
+		timeElapsed = elapsed.count();
+
+		iterCounter++;
 	}
 
 	if (printInfo) {
@@ -106,6 +118,16 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double alphaMin, 
 void IteratedGreedy::setPrintInfo(bool b)
 {
 	this->printInfo = b;
+}
+
+double IteratedGreedy::getElapsedTime() const
+{
+	return timeElapsed;
+}
+
+int IteratedGreedy::getIterCounter() const
+{
+	return iterCounter;
 }
 
 void IteratedGreedy::applyConstruction(Solution * SPrime, int d, int GREEDY_SELECTION_MODE) const
