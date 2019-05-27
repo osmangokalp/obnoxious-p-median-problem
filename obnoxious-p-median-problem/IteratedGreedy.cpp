@@ -43,8 +43,8 @@ Solution * IteratedGreedy::solve(Solution * sol, int MAX_ITER, double MAX_TIME, 
 	std::default_random_engine generator;
 	//std::normal_distribution<double> n_dist_dPercent(dPercentMean, 0.2);
 	//std::normal_distribution<double> n_dist_alpha(alphaMin, 0.2);
-	std::uniform_real_distribution<double> u_dist_alpha(alphaMin, 1.0);
-	std::uniform_real_distribution<double> u_dist_dPercent(dPercentMean - 0.1, dPercentMean + 0.1);
+	std::uniform_real_distribution<double> u_dist_alpha(0.0, 0.8);
+	std::uniform_real_distribution<double> u_dist_dPercent(0.3, 0.5);
 
 	iterCounter = 1;
 	timeElapsed = 0.0;

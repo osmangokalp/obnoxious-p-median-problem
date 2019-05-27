@@ -16,7 +16,8 @@ ProblemInstanceReader::ProblemInstanceReader(string fileName)
 	inFile.open(INSTANCE_FOLDER_NAME + string("\\") + fileName);
 
 	if (inFile.fail()) {
-		cerr << "unable to open file << fileName << for reading" << endl;
+		std::cout << "Ýrace deneme!";
+		cerr << "unable to open file " << INSTANCE_FOLDER_NAME + string("\\") + fileName << " for reading" << endl;
 		exit(1);
 	}
 
